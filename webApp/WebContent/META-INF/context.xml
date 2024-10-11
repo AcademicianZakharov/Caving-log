@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<Context>
+   <Resource name="jdbc/dbcp" auth="Container"
+       type="javax.sql.DataSource" 
+       username="dbUserName" password="[dbUserName]"
+       driverClassName="org.postgresql.Driver"
+       url="jdbc:postgresql://localhost:5432/yourDb" 
+       maxActive="15"    /> 
+	<parameter>
+		<name>removeAbandoned</name>
+		<value>true</value>
+	</parameter>
+	<parameter>
+		<name>removeAbandonedTimeout</name>
+		<value>60</value>
+	</parameter>
+	<parameter>
+		<name>logAbandoned</name>
+		<value>true</value>
+	</parameter>
+   
+</Context>
