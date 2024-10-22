@@ -3,10 +3,12 @@
 <Context>
    <Resource name="jdbc/dbcp" auth="Container"
        type="javax.sql.DataSource" 
-       username="dbUserName" password="[dbUserName]"
+       username="gmaryshev" password="forestbrewless"
        driverClassName="org.postgresql.Driver"
-       url="jdbc:postgresql://localhost:5432/yourDb" 
-       maxActive="15"    /> 
+       url="jdbc:postgresql://xpgdev1.nfis.org:5432/sandbox" 
+       maxActive="15"
+       maxIdle="10"    
+       validationQuery = "SELECT * FROM cavers" /> 
 	<parameter>
 		<name>removeAbandoned</name>
 		<value>true</value>

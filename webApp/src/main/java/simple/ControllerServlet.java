@@ -1,12 +1,16 @@
 package simple;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.tinylog.Logger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ControllerServlet extends HttpServlet {
 	public static final String OPERATION_PARAM = "operation";
@@ -14,6 +18,7 @@ public class ControllerServlet extends HttpServlet {
 	public ControllerServlet() {
 		super();
 	}
+	
 	
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -24,9 +29,18 @@ public class ControllerServlet extends HttpServlet {
 		String filter = (String) request.getParameter(FILTER_PARAM);
 		response.setContentType("text/html");
         response.setHeader("Cache-Control", "no-cache");
-        //send response with register result
-        response.getWriter().write("operation = " + operation);
-        response.getWriter().write("<br>filter = " + filter);
+
+        daoFile dao = new daoFile();
+        dao.testConnection();
+        response.getWriter().write("Connection Test Completed");
+     // Read all cavers and trips
+        List<Object[]> results = dao.readRecords("cavers JOIN trips ON cavers.caver_id = trips.caver_id",
+            new String[] {"cavers.caver_id", "cavers.name", "trips.cave_name"}, null);
+        for (Object[] row : results) {
+            Logger.info(Arrays.toString(row));
+        }
+
+        
 	}
 
 	/**
@@ -37,5 +51,4 @@ public class ControllerServlet extends HttpServlet {
 	}
 
 }
-//random
-//When I uncommented lines 60 to 71, I was not able access the nfis website but 
+
