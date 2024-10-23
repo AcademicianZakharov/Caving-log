@@ -11,6 +11,8 @@ import org.tinylog.Logger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.lang.String;
+
 
 public class ControllerServlet extends HttpServlet {
 	public static final String OPERATION_PARAM = "operation";
@@ -30,17 +32,27 @@ public class ControllerServlet extends HttpServlet {
 		response.setContentType("text/html");
         response.setHeader("Cache-Control", "no-cache");
 
-        daoFile dao = new daoFile();
+        DaoFile dao = new DaoFile();
         dao.testConnection();
         response.getWriter().write("Connection Test Completed");
-     // Read all cavers and trips
-        List<Object[]> results = dao.readRecords("cavers JOIN trips ON cavers.caver_id = trips.caver_id",
-            new String[] {"cavers.caver_id", "cavers.name", "trips.cave_name"}, null);
-        for (Object[] row : results) {
-            Logger.info(Arrays.toString(row));
-        }
-
+        //dao.addCaver("gabriel", "safe", "2501234567");
         
+        
+        List<Caver> cavers = new ArrayList<>();
+        cavers = dao.getCavers();
+        // build HTML code
+        String htmlRespone = "<html>";
+  	  	for (Caver caver: cavers) {
+  		
+	        htmlRespone += "<h3>name: " + caver.getName() + "<br/>";
+	        htmlRespone += "id: " + caver.getCaver_id() + "</br>";
+	        htmlRespone += "phone: " + caver.getPhone() + "<br/>";
+	        htmlRespone += "status: " + caver.getStatus() + "</h3>";
+        
+			}
+        
+	  	htmlRespone += "</html>";
+	    response.getWriter().write(htmlRespone);
 	}
 
 	/**

@@ -3,8 +3,11 @@
 	
 	<display-name>SimpleApp</display-name>
 	<welcome-file-list>
+		<welcome-file>Registration.jsp</welcome-file>
+		<welcome-file>Registration_handler.jsp</welcome-file>
 		<welcome-file>index.jsp</welcome-file>
 		<welcome-file>ControllerServlet</welcome-file>
+		<welcome-file>CrudServlet</welcome-file>
 	</welcome-file-list>
 
 	<servlet>
