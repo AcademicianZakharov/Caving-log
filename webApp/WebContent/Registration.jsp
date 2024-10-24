@@ -32,30 +32,16 @@
 </head>
 <body>
 
-<div class="registration-container">
-    <h2 class="registration-heading">Registration Form</h2>
-    <form action="registration_handler.jsp" method="post">
+<div class="registration-container">    
+    <form action="CrudServlet" method="post">
         <label for="Name">Name:</label>
-        <input type="text" id="name" name="name" class="input-field" required><br>
+        <input type="text" id="name" name="name" class="input-field" onfocus="this.value=''" value="Name" required><br>
 
         <label for="phone">Phone  Number:</label>
-        <input type="tel" id="phone" name="phone" class="input-field" required><br>
+        <input type="tel" id="phone" name="phone" class="input-field" onfocus="this.value=''" value="phone" required><br>
         
         <label for="status">Status:</label>
-        <input type="tel" id="status" name="status" class="input-field" required><br>
-
-        <input type="submit" value="view">
-    </form>
-    
-        <form action="CrudServlet" method="post">
-        <label for="Name">Name:</label>
-        <input type="text" id="name" name="name" class="input-field" required><br>
-
-        <label for="phone">Phone  Number:</label>
-        <input type="tel" id="phone" name="phone" class="input-field" required><br>
-        
-        <label for="status">Status:</label>
-        <input type="tel" id="status" name="status" class="input-field" required><br>
+        <input type="tel" id="status" name="status" class="input-field" onfocus="this.value=''" value="status" required><br>
 
         <input type="submit" value="Insert">
     </form>
