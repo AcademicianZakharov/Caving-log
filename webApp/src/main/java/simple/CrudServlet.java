@@ -19,7 +19,7 @@ import org.tinylog.Logger;
 /**
  * Servlet implementation class CrudServelet
  */
-@WebServlet("/CrudServlet")
+//@WebServlet("/CrudServlet")
 public class CrudServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -52,42 +52,64 @@ public class CrudServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
 		String action = request.getParameter("action");
+		String formName = request.getParameter("name");
 		DaoFile dao = new DaoFile();
+		PrintWriter out = response.getWriter();
         dao.testConnection();
 		if ("delete".equals(action)) {
 			// Delete action
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
 			dao.deleteCaver(caverId);
 			Logger.info("Caver with ID " + caverId + " deleted.");
-			response.sendRedirect("read_handler.jsp");
-		} 
-		
-		
-		response.setContentType("text/html");
-		PrintWriter out = response.getWriter();
-
-		String name = request.getParameter("name");
-		String status = request.getParameter("status");
-		String phone = request.getParameter("phone");
-
-		//Check for empty parameters
-		if (name == null || name.isEmpty() || status == null || status.isEmpty() || phone == null || phone.isEmpty()) {
-			out.println("Error: All fields (name, status, phone) are required.");
-			return;
+			response.sendRedirect(request.getContextPath() + "/CrudServlet");
+		} else if ("update".equals(action)) {
+			//update action
+			int caverId = Integer.parseInt(request.getParameter("caver_id"));
+			String name = request.getParameter("name");
+//			String status = request.getParameter("status");
+//			String phone = request.getParameter("phone");
+//			//Check for empty parameters
+//			if (name == null || name.isEmpty() || status == null || status.isEmpty() || phone == null || phone.isEmpty()) {
+//				out.println("Error: All fields (name, status, phone) are required.");
+//				return;
+//			}
+//			Logger.info("Adding a new Caver: Name = " + name + ", Status = " + status + ", Phone = " + phone);
+			dao.updateCaverName(caverId,name);
+			Logger.info("Caver with ID " + caverId + " updated.");
+			response.sendRedirect("read_handler.jsp");  
+		} else if ("insert".equals(formName)) {
+			//default action (could be adding a new caver, etc.)
+			String name = request.getParameter("name");
+			String status = request.getParameter("status");
+			String phone = request.getParameter("phone");
+			//Check for empty parameters
+			if (name == null || name.isEmpty() || status == null || status.isEmpty() || phone == null || phone.isEmpty()) {
+				out.println("Error: All fields (name, status, phone) are required.");
+				return;
+			}
+			Logger.info("Adding a new Caver: Name = " + name + ", Status = " + status + ", Phone = " + phone);
+			dao.addCaver(name, status, phone);
+			Logger.info("New caver added: " + name);
+			List<Caver> cavers = dao.getCavers(); 
+			//store the list of cavers in the session
+			HttpSession session = request.getSession();
+			session.setAttribute("cavers", cavers);
+			//forward to the JSP page
+			RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
+			dispatcher.forward(request, response);
 		}
-		Logger.info("Adding a new Caver: Name = " + name + ", Status = " + status + ", Phone = " + phone);
+		else {		
+			//Read cavers from db
+			List<Caver> cavers = dao.getCavers(); 
+			//store the list of cavers in the session
+			HttpSession session = request.getSession();
+			session.setAttribute("cavers", cavers);
+			//forward to the JSP page
+			RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
+			dispatcher.forward(request, response);
+		}
+		
 
-		dao.addCaver(name, status, phone);
-
-		//response.sendRedirect("read_handler.jsp");
-
-		List<Caver> cavers = dao.getCavers(); 
-		//store the list of cavers in the session
-		HttpSession session = request.getSession();
-		session.setAttribute("cavers", cavers);
-		//forward to the JSP page
-		RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
-		dispatcher.forward(request, response);
 	}
 
 }

@@ -4,10 +4,10 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Caver Registration Form</title>
+    <title>Update Caver Form</title>
     <style>
-        /* CSS styles for the registration form container */
-        .registration-container {
+        /* CSS styles for the update form container */
+        .update-container {
             width: 600px; /* Set the width of the container */
             margin: 0 auto; /* Center the container horizontally */
             padding: 20px; /* Add some padding inside the container */
@@ -17,7 +17,7 @@
         }
 
         /* CSS styles for the heading */
-        .registration-heading {
+        .update-heading {
             text-align: center; /* Center the heading text */
         }
 
@@ -32,8 +32,8 @@
 </head>
 <body>
 
-<div class="registration-container">    
-    <form action="CrudServlet" method="post" name="insert">
+<div class="update-container">    
+    <form action="CrudServlet" method="post">
         <label for="Name">Name:</label>
         <input type="text" id="name" name="name" class="input-field" onfocus="this.value=''" value="Name" required><br>
 
@@ -42,9 +42,8 @@
         
         <label for="status">Status:</label>
         <input type="tel" id="status" name="status" class="input-field" onfocus="this.value=''" value="status" required><br>
-        
-        <input type="hidden" name="action" value="insert">
-        <input type="submit" value="insert">
+
+        <input type="submit" value="Update">
     </form>
 </div>
 
