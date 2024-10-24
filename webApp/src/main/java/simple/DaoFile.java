@@ -13,13 +13,14 @@ import java.util.ArrayList;
 import java.util.List;
 public class DaoFile {
 
-	//sql strings
+
+	//sql and prepared statements
 	String sql_select_all = "SELECT * FROM cavers";
-	String sql_insert_caver = "INSERT INTO cavers (caver_id, name, status, phone) VALUES (?, ?, ?, ?)";
-	
-	int largest_key;
-	//Logger.info("largest_key:"+ largest_key);
-	
+	String sql_insert_caver = "INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)";
+	String sql_delete_caver = "DELETE FROM cavers WHERE caver_id = ?";
+	String sql_update_caver_name = "UPDATE cavers SET name = ? WHERE caver_id = ?";
+
+
 	//establish connection to the db
 	private ConnectionManager connectionManager;
 	public DaoFile() {
@@ -42,58 +43,75 @@ public class DaoFile {
 
 	}
 	public void testConnection() {
-        Connection connection = null;
-        try {
-            connection = connectionManager.getConnection();
-            if (connection != null) {
-            	Logger.info("----------------db connection-------------");
-            }
-        } catch (SQLException e) {
-        	Logger.info("db connection error");
-        } 
-    }
-	
-	  //Create new caver record in the db
-	  public void addCaver(String name, String status, String phone) {
-	      try (Connection connection = connectionManager.getConnection();
-	           PreparedStatement ps = connection.prepareStatement(sql_insert_caver)) {
-	          ps.setInt(1, largest_key);
-	          ps.setString(2, name);
-	          ps.setString(3, status);
-	          ps.setString(4, phone);
-	          ps.executeUpdate();
-	      } catch (SQLException e) {
-	          e.printStackTrace();
-	      }
-	  }
-	
+		Connection connection = null;
+		try {
+			connection = connectionManager.getConnection();
+			if (connection != null) {
+				Logger.info("----------------db connection-------------");
+			}
+		} catch (SQLException e) {
+			Logger.info("db connection error");
+		} 
+	}
+
+	//Create new caver record in the db
+	public void addCaver(String name, String status, String phone) {
+		try (Connection connection = connectionManager.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql_insert_caver)) {
+			ps.setString(1, name);
+			ps.setString(2, status);
+			ps.setString(3, phone);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
 	//Read caver records from the db
 	public List<Caver> getCavers() {	
 		List<Caver> cavers = new ArrayList<>();
 		try (Connection connection = connectionManager.getConnection();
-		     PreparedStatement ps = connection.prepareStatement(sql_select_all);
-		     ResultSet rs = ps.executeQuery()) {
-		    while (rs.next()) {
-		        Caver caver = new Caver(rs.getInt("caver_id"), rs.getString("name"),
-		                                  rs.getString("status"), rs.getString("phone"));
-		        cavers.add(caver);
-		        if(caver.getCaver_id() >=largest_key) {
-		        	largest_key = caver.getCaver_id();
-		        	Logger.info("largest_key:"+ largest_key);
-		        }
-		    }
-		    
+				PreparedStatement ps = connection.prepareStatement(sql_select_all);
+				ResultSet rs = ps.executeQuery()) {
+			while (rs.next()) {
+				Caver caver = new Caver(rs.getInt("caver_id"), rs.getString("name"),
+						rs.getString("status"), rs.getString("phone"));
+				cavers.add(caver);
+
+			}
+
 		} catch (SQLException e) {
 			Logger.info("db connection error");
-			}
-	  for (Caver caver: cavers) {
-		  	Logger.info(caver.getName()+ " " + caver.getCaver_id() + " " + caver.getPhone() + " " + caver.getStatus());
-			}
-	  return cavers;
+		}
+		for (Caver caver: cavers) {
+			Logger.info(caver.getName()+ " " + caver.getCaver_id() + " " + caver.getPhone() + " " + caver.getStatus());
+		}
+		return cavers;
 	}
-	
-	
 
-	
+	//update caver name
+	public void updateCaverName(int caverId, String newName) {
+		try (Connection connection = connectionManager.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql_update_caver_name)) {
+			ps.setString(1, newName);
+			ps.setInt(2, caverId);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// delete a caver by caver_id
+	public void deleteCaver(int caver_id) {
+		try (Connection connection = connectionManager.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql_delete_caver)) {
+			ps.setInt(1, caver_id);
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+
 
 }
