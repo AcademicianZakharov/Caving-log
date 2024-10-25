@@ -61,6 +61,7 @@ public class CrudServlet extends HttpServlet {
 			dao.deleteCaver(caverId);
 			Logger.info("Caver with ID " + caverId + " deleted.");
 			response.sendRedirect(request.getContextPath() + "/CrudServlet");
+			
 		} else if ("update".equals(action)) {
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
 			String name = request.getParameter("name");
@@ -72,7 +73,7 @@ public class CrudServlet extends HttpServlet {
 				return;
 			}
 			Logger.info("Updating Caver: Name = " + name + ", Status = " + status + ", Phone = " + phone);
-			dao.updateCaverName(caverId,name);
+			dao.updateCaver(caverId,name, status, phone);
 			Logger.info("Caver with ID " + caverId + " updated.");
 			response.sendRedirect(request.getContextPath() + "/CrudServlet");
 		} else if ("insert".equals(action)) {
@@ -106,8 +107,7 @@ public class CrudServlet extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
 			dispatcher.forward(request, response);
 		}
-
-
+		
 	}
 
 }

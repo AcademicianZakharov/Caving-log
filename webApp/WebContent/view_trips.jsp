@@ -12,7 +12,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Read Handler</title>
+    <title>View Trips</title>
     <style>
         /* CSS styles for the read form container */
         .read-container {
@@ -57,10 +57,10 @@
 <body>
 
 <div class="read-container">
-    <h2 class="read-heading">Cavers</h2>
+    <h2 class="read-heading">Trips</h2>
 <%
-        List<Caver> cavers = (List<Caver>) session.getAttribute("cavers");
-        if (cavers != null && !cavers.isEmpty()) {
+        List<Trip> trips = (List<Trip>) session.getAttribute("trips");
+        if (trips != null && !trips.isEmpty()) {
     %>
     <table>
         <thead>
@@ -74,31 +74,28 @@
         </thead>
         <tbody>
             <%
-                for (Caver caver : cavers) {
+                for (Trip trip : trips) {
             %>
             <tr>
-                <td><%= caver.getCaver_id() %></td>
-                <td><%= caver.getName() %></td>
-                <td><%= caver.getPhone() %></td>
-                <td><%= caver.getStatus() %></td>
+                <td><%= trip.getTrip_id() %></td>
+                <td><%= trip.getCaver_id() %></td>
+                <td><%= trip.getCave_name() %></td>
+                <td><%= trip.getStart_time() %></td>
+                <td><%= trip.getEnd_time() %></td>
+                <td><%= trip.getGroup_size()%></td>
+                <td><%= trip.getMax_trip_length()%></td>
                 
                 <td class="action-buttons">
                     <form action="CrudServlet" method="post" style="display:inline;">
                         <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="caver_id" value="<%= caver.getCaver_id() %>">
+                        <input type="hidden" name=trip_id value="<%= trip.getTrip_id() %>">
                         <button type="submit" class="delete-btn">Delete</button>
                     </form>
                     
                     <form action="update_caver.jsp" method="get" style="display:inline;">
-                        <input type="hidden" name="caver_id" value="<%= caver.getCaver_id() %>">
+                        <input type="hidden" name="caver_id" value="<%= trip.getTrip_id() %>">
                         <button type="submit" class="update-btn">Update</button>
-                    </form>
-                    
-                    <form action="view_trips.jsp" method="get" style="display:inline;">
-                        <input type="hidden" name="caver_id" value="<%= caver.getCaver_id() %>">
-                        <button type="submit" class="view-btn">View Trips</button>
-                    </form>
-                    
+                    </form>      
                 </td>
             </tr>
             <%
@@ -108,12 +105,12 @@
 
     </table>
     <form action="registration.jsp" method="get" style="display:inline;">
-    	<button type="submit" class="insert-btn">Add Caver</button>
+    	<button type="submit" class="insert-btn">Add trip</button>
     </form>
     <%
         } else {
     %>
-    <p>No cavers found.</p>
+    <p>No Trips found.</p>
     <%
         }
     %>

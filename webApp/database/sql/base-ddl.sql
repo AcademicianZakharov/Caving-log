@@ -3,8 +3,8 @@
 --USE caving;
 
 -- Drop existing tables if needed 
---DROP TABLE IF EXISTS trips;
---DROP TABLE IF EXISTS cavers;
+DROP TABLE IF EXISTS trips;
+DROP TABLE IF EXISTS cavers;
 -- Create the cavers table with auto-incrementing caver_id
 CREATE TABLE cavers(
   caver_id SERIAL PRIMARY KEY,  -- SERIAL will auto-increment the caver_id
@@ -19,7 +19,12 @@ VALUES
   ('Jane', 'safe', '604123456'),
   ('Alice', 'safe', '604123456'),
   ('Bob', 'safe', '604123456'),
-  ('Emily', 'safe', '604123456');
+  ('Emily', 'safe', '604123456'),
+  ('jack', 'safe', '604123456'),
+  ('jordan', 'safe', '604123456'),
+  ('Amy', 'safe', '604123456'),
+  ('Jerry', 'safe', '604123456'),
+  ('Jasmine', 'safe', '604123456');
 -- Create the trips table with auto-incrementing trip_id
 CREATE TABLE trips(
   trip_id SERIAL PRIMARY KEY,   -- SERIAL will auto-increment the trip_id

@@ -15,12 +15,16 @@ public class DaoFile {
 
 
 	//sql and prepared statements
-	String sql_select_all = "SELECT * FROM cavers";
+	String sql_select_all_cavers = "SELECT * FROM cavers";
 	String sql_insert_caver = "INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)";
 	String sql_delete_caver = "DELETE FROM cavers WHERE caver_id = ?";
-	String sql_update_caver_name = "UPDATE cavers SET name = ? WHERE caver_id = ?";
-	String sql_update_caver_all = "UPDATE cavers SET (name, status, phone)  VALUES (?, ?, ?)";
+	String sql_update_caver = "UPDATE cavers SET name = ?, status = ?, phone = ? WHERE caver_id = ?";
 
+	
+	String SQL_SELECT_ALL_TRIPS = "SELECT * FROM trips";
+	String SQL_INSERT_TRIP = "INSERT INTO trips (cave_name, start_time, end_time, group_size, max_trip_length) VALUES (?, ?, ?, ?, ?)";
+	String SQL_DELETE_TRIP = "DELETE FROM trips WHERE caver_id = ?";
+	String SQL_UPDATE_TRIP = "UPDATE trips SET name = ?, status = ?, phone = ? WHERE trip_id = ?";
 
 	//establish connection to the db
 	private ConnectionManager connectionManager;
@@ -50,6 +54,7 @@ public class DaoFile {
 			if (connection != null) {
 				Logger.info("----------------db connection-------------");
 			}
+			connection.close();
 		} catch (SQLException e) {
 			Logger.info("db connection error");
 		} 
@@ -63,6 +68,7 @@ public class DaoFile {
 			ps.setString(2, status);
 			ps.setString(3, phone);
 			ps.executeUpdate();
+			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -72,7 +78,7 @@ public class DaoFile {
 	public List<Caver> getCavers() {	
 		List<Caver> cavers = new ArrayList<>();
 		try (Connection connection = connectionManager.getConnection();
-				PreparedStatement ps = connection.prepareStatement(sql_select_all);
+				PreparedStatement ps = connection.prepareStatement(sql_select_all_cavers);
 				ResultSet rs = ps.executeQuery()) {
 			while (rs.next()) {
 				Caver caver = new Caver(rs.getInt("caver_id"), rs.getString("name"),
@@ -80,7 +86,29 @@ public class DaoFile {
 				cavers.add(caver);
 
 			}
+		connection.close();
+		} catch (SQLException e) {
+			Logger.info("db connection error");
+		}
+		for (Caver caver: cavers) {
+			Logger.info(caver.getName()+ " " + caver.getCaver_id() + " " + caver.getPhone() + " " + caver.getStatus());
+		}
+		return cavers;
+	}
+	
+	//Read trips records from the db
+	public List<Trip> getTrips() {	
+		List<Trip> trips = new ArrayList<>();
+		try (Connection connection = connectionManager.getConnection();
+				PreparedStatement ps = connection.prepareStatement(sql_select_all);
+				ResultSet rs = ps.executeQuery()) {
+			while (rs.next()) {
+				Trip trip = new Trip(rs.getInt("caver_id"), rs.getString("name"),
+						rs.getString("status"), rs.getString("phone"));
+				Trips.add(trip);
 
+			}
+		connection.close();
 		} catch (SQLException e) {
 			Logger.info("db connection error");
 		}
@@ -91,12 +119,15 @@ public class DaoFile {
 	}
 
 	//update caver name
-	public void updateCaverName(int caverId, String newName) {
+	public void updateCaver(int caverId, String newName, String status, String phone) {
 		try (Connection connection = connectionManager.getConnection();
-				PreparedStatement ps = connection.prepareStatement(sql_update_caver_name)) {
+				PreparedStatement ps = connection.prepareStatement(sql_update_caver)) {
 			ps.setString(1, newName);
-			ps.setInt(2, caverId);
+			ps.setString(2, status);
+			ps.setString(3, phone);
+			ps.setInt(4, caverId);
 			ps.executeUpdate();
+			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -108,6 +139,7 @@ public class DaoFile {
 				PreparedStatement ps = connection.prepareStatement(sql_delete_caver)) {
 			ps.setInt(1, caver_id);
 			ps.executeUpdate();
+			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

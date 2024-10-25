@@ -5,8 +5,7 @@
     http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
     <display-name>SimpleApp</display-name>
     <welcome-file-list>
-        <welcome-file>Registration.jsp</welcome-file>
-        <welcome-file>Registration_handler.jsp</welcome-file>
+        <welcome-file>registration.jsp</welcome-file>
     </welcome-file-list>
     
     <servlet>
