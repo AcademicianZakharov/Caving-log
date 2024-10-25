@@ -19,6 +19,7 @@ public class DaoFile {
 	String sql_insert_caver = "INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)";
 	String sql_delete_caver = "DELETE FROM cavers WHERE caver_id = ?";
 	String sql_update_caver_name = "UPDATE cavers SET name = ? WHERE caver_id = ?";
+	String sql_update_caver_all = "UPDATE cavers SET (name, status, phone)  VALUES (?, ?, ?)";
 
 
 	//establish connection to the db
@@ -66,7 +67,7 @@ public class DaoFile {
 			e.printStackTrace();
 		}
 	}
-	
+
 	//Read caver records from the db
 	public List<Caver> getCavers() {	
 		List<Caver> cavers = new ArrayList<>();

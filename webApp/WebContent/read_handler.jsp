@@ -17,17 +17,17 @@
         /* CSS styles for the read form container */
         .read-container {
              
-            width: 600px; /* Set the width of the container */
-            margin: 20px auto; /* Center the container horizontally with some top margin */
-            padding: 20px; /* Add some padding inside the container */
-            border: 2px solid #ccc; /* Add a border */
-            border-radius: 10px; /* Add some border radius */
-            background-color: #f9f9f9; /* Background color */
+            width: 600px; 
+            margin: 20px auto; 
+            padding: 20px; 
+            border: 2px solid #ccc; 
+            border-radius: 10px; 
+            background-color: #f9f9f9; 
         }
 
         /* CSS styles for the heading */
         .read--heading {
-            text-align: center; /* Center the heading text */
+            text-align: center; 
         }
 
         /* CSS styles for input fields */
@@ -105,7 +105,11 @@
                 }
             %>
         </tbody>
+
     </table>
+    <form action="Registration.jsp" method="get" style="display:inline;">
+    	<button type="submit" class="insert-btn">Add Caver</button>
+    </form>
     <%
         } else {
     %>

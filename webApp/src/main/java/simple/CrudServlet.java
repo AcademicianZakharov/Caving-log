@@ -36,7 +36,7 @@ public class CrudServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		DaoFile dao = new DaoFile();
-        dao.testConnection();
+		dao.testConnection();
 		List<Caver> cavers = dao.getCavers(); 
 		//store the list of cavers in the session
 		HttpSession session = request.getSession();
@@ -52,10 +52,9 @@ public class CrudServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
 		String action = request.getParameter("action");
-		String formName = request.getParameter("name");
 		DaoFile dao = new DaoFile();
 		PrintWriter out = response.getWriter();
-        dao.testConnection();
+		dao.testConnection();
 		if ("delete".equals(action)) {
 			// Delete action
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
@@ -63,21 +62,20 @@ public class CrudServlet extends HttpServlet {
 			Logger.info("Caver with ID " + caverId + " deleted.");
 			response.sendRedirect(request.getContextPath() + "/CrudServlet");
 		} else if ("update".equals(action)) {
-			//update action
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
 			String name = request.getParameter("name");
-//			String status = request.getParameter("status");
-//			String phone = request.getParameter("phone");
-//			//Check for empty parameters
-//			if (name == null || name.isEmpty() || status == null || status.isEmpty() || phone == null || phone.isEmpty()) {
-//				out.println("Error: All fields (name, status, phone) are required.");
-//				return;
-//			}
-//			Logger.info("Adding a new Caver: Name = " + name + ", Status = " + status + ", Phone = " + phone);
+			String status = request.getParameter("status");
+			String phone = request.getParameter("phone");
+			//Check for empty parameters
+			if (name == null || name.isEmpty() || status == null || status.isEmpty() || phone == null || phone.isEmpty()) {
+				out.println("Error: All fields (name, status, phone) are required.");
+				return;
+			}
+			Logger.info("Updating Caver: Name = " + name + ", Status = " + status + ", Phone = " + phone);
 			dao.updateCaverName(caverId,name);
 			Logger.info("Caver with ID " + caverId + " updated.");
-			response.sendRedirect("read_handler.jsp");  
-		} else if ("insert".equals(formName)) {
+			response.sendRedirect(request.getContextPath() + "/CrudServlet");
+		} else if ("insert".equals(action)) {
 			//default action (could be adding a new caver, etc.)
 			String name = request.getParameter("name");
 			String status = request.getParameter("status");
@@ -108,7 +106,7 @@ public class CrudServlet extends HttpServlet {
 			RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
 			dispatcher.forward(request, response);
 		}
-		
+
 
 	}
 
