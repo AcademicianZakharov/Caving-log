@@ -20,11 +20,11 @@ public class DaoFile {
 	String sql_delete_caver = "DELETE FROM cavers WHERE caver_id = ?";
 	String sql_update_caver = "UPDATE cavers SET name = ?, status = ?, phone = ? WHERE caver_id = ?";
 
-	
-	String SQL_SELECT_ALL_TRIPS = "SELECT * FROM trips";
+	//remember to change it for a given caver_id
+	String SQL_SELECT_TRIPS = "SELECT * FROM trips";
 	String SQL_INSERT_TRIP = "INSERT INTO trips (cave_name, start_time, end_time, group_size, max_trip_length) VALUES (?, ?, ?, ?, ?)";
-	String SQL_DELETE_TRIP = "DELETE FROM trips WHERE caver_id = ?";
-	String SQL_UPDATE_TRIP = "UPDATE trips SET name = ?, status = ?, phone = ? WHERE trip_id = ?";
+	String SQL_DELETE_TRIP = "DELETE FROM trips WHERE trip_id = ?";
+	String SQL_UPDATE_TRIP = "UPDATE trips SET cave_name = ?, start_time = ?, end_time = ?, group_size = ?, max_trip_length = ? WHERE trip_id = ?";
 
 	//establish connection to the db
 	private ConnectionManager connectionManager;
@@ -60,7 +60,7 @@ public class DaoFile {
 		} 
 	}
 
-	//Create new caver record in the db
+	//add new caver record in the db
 	public void addCaver(String name, String status, String phone) {
 		try (Connection connection = connectionManager.getConnection();
 				PreparedStatement ps = connection.prepareStatement(sql_insert_caver)) {
@@ -71,6 +71,21 @@ public class DaoFile {
 			connection.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+	}
+	//add new trip
+	public void addTrip(String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
+		try (Connection connection = connectionManager.getConnection();
+				PreparedStatement ps = connection.prepareStatement(SQL_INSERT_TRIP)) {
+			ps.setString(1, caveName);
+			ps.setTimestamp(2, startTime);
+			ps.setTimestamp(3, endTime);
+			ps.setInt(4, groupSize);
+			ps.setDouble(5, maxTripLength);
+			ps.executeUpdate();
+			Logger.info("Trip added successfully");
+		} catch (SQLException e) {
+			Logger.error("Error adding trip", e);
 		}
 	}
 
@@ -86,37 +101,31 @@ public class DaoFile {
 				cavers.add(caver);
 
 			}
-		connection.close();
+			connection.close();
 		} catch (SQLException e) {
 			Logger.info("db connection error");
 		}
-		for (Caver caver: cavers) {
-			Logger.info(caver.getName()+ " " + caver.getCaver_id() + " " + caver.getPhone() + " " + caver.getStatus());
-		}
 		return cavers;
 	}
-	
-	//Read trips records from the db
-	public List<Trip> getTrips() {	
+
+	//read all trips
+	public List<Trip> getTrips() {
 		List<Trip> trips = new ArrayList<>();
 		try (Connection connection = connectionManager.getConnection();
-				PreparedStatement ps = connection.prepareStatement(sql_select_all);
+				PreparedStatement ps = connection.prepareStatement(SQL_SELECT_TRIPS);
 				ResultSet rs = ps.executeQuery()) {
 			while (rs.next()) {
-				Trip trip = new Trip(rs.getInt("caver_id"), rs.getString("name"),
-						rs.getString("status"), rs.getString("phone"));
-				Trips.add(trip);
-
+				Trip trip = new Trip(rs.getInt("trip_id"), rs.getInt("caver_id"), rs.getString("cave_name"),
+						rs.getTimestamp("start_time"), rs.getTimestamp("end_time"),
+						rs.getInt("group_size"), rs.getDouble("max_trip_length"));
+				trips.add(trip);
 			}
-		connection.close();
 		} catch (SQLException e) {
-			Logger.info("db connection error");
+			Logger.error("Error retrieving trips", e);
 		}
-		for (Caver caver: cavers) {
-			Logger.info(caver.getName()+ " " + caver.getCaver_id() + " " + caver.getPhone() + " " + caver.getStatus());
-		}
-		return cavers;
+		return trips;
 	}
+
 
 	//update caver name
 	public void updateCaver(int caverId, String newName, String status, String phone) {
@@ -133,6 +142,23 @@ public class DaoFile {
 		}
 	}
 
+	//update a trip
+	public void updateTrip(int tripId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
+		try (Connection connection = connectionManager.getConnection();
+				PreparedStatement ps = connection.prepareStatement(SQL_UPDATE_TRIP)) {
+			ps.setString(1, caveName);
+			ps.setTimestamp(2, startTime);
+			ps.setTimestamp(3, endTime);
+			ps.setInt(4, groupSize);
+			ps.setDouble(5, maxTripLength);
+			ps.setInt(6, tripId);
+			ps.executeUpdate();
+			Logger.info("Trip with ID " + tripId + " updated successfully");
+		} catch (SQLException e) {
+			Logger.error("Error updating trip", e);
+		}
+	}
+
 	// delete a caver by caver_id
 	public void deleteCaver(int caver_id) {
 		try (Connection connection = connectionManager.getConnection();
@@ -145,6 +171,17 @@ public class DaoFile {
 		}
 	}
 
+	//delete a trip
+	public void deleteTrip(int tripId) {
+		try (Connection connection = connectionManager.getConnection();
+				PreparedStatement ps = connection.prepareStatement(SQL_DELETE_TRIP)) {
+			ps.setInt(1, tripId);
+			ps.executeUpdate();
+			Logger.info("Trip with ID " + tripId + " deleted successfully");
+		} catch (SQLException e) {
+			Logger.error("Error deleting trip", e);
+		}
+	}
 
 
 }

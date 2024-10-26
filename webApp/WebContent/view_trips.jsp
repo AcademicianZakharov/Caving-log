@@ -13,46 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <title>View Trips</title>
-    <style>
-        /* CSS styles for the read form container */
-        .read-container {
-             
-            width: 600px; 
-            margin: 20px auto; 
-            padding: 20px; 
-            border: 2px solid #ccc; 
-            border-radius: 10px; 
-            background-color: #f9f9f9; 
-        }
-
-        /* CSS styles for the heading */
-        .read--heading {
-            text-align: center; 
-        }
-
-        /* CSS styles for input fields */
-        .input-field {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            box-sizing: border-box;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
-        }
-        th, td {
-            padding: 10px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-    </style>
+    <link rel="stylesheet" type="text/css" href="read_style.css">
 </head>
 <body>
 
@@ -92,7 +53,7 @@
                         <button type="submit" class="delete-btn">Delete</button>
                     </form>
                     
-                    <form action="update_caver.jsp" method="get" style="display:inline;">
+                    <form action="update_trip.jsp" method="get" style="display:inline;">
                         <input type="hidden" name="caver_id" value="<%= trip.getTrip_id() %>">
                         <button type="submit" class="update-btn">Update</button>
                     </form>      

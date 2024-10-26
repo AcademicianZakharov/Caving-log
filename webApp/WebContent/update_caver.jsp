@@ -5,29 +5,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Update Caver Information</title>
-    <style>
-        .update-container {
-            width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            border: 2px solid #ccc;
-            border-radius: 10px;
-            background-color: #f9f9f9;
-        }
-        .update-heading {
-            text-align: center;
-        }
-        .input-field {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            box-sizing: border-box;
-        }
-        .error {
-            color: red;
-            margin-bottom: 10px;
-        }
-    </style>
+	<link rel="stylesheet" type="text/css" href="read_style.css">
+	
 </head>
 <body>
     <div class="update-container">

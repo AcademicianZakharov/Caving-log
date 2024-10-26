@@ -61,6 +61,7 @@ public class CrudServlet extends HttpServlet {
 			dao.deleteCaver(caverId);
 			Logger.info("Caver with ID " + caverId + " deleted.");
 			response.sendRedirect(request.getContextPath() + "/CrudServlet");
+			action = null;
 			
 		} else if ("update".equals(action)) {
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
@@ -69,13 +70,14 @@ public class CrudServlet extends HttpServlet {
 			String phone = request.getParameter("phone");
 			//Check for empty parameters
 			if (name == null || name.isEmpty() || status == null || status.isEmpty() || phone == null || phone.isEmpty()) {
-				out.println("Error: All fields (name, status, phone) are required.");
+				out.println("Error: All fields (name, status, phoneclipse-javadoc:%E2%98%82=webApp/src%5C/main%5C/java=/optional=/true=/=/maven.pomderived=/true=/%3Csimple%7BCrudServlet.java%E2%98%83CrudServlet~doPost~QHttpServletRequest;~QHttpServletResponse;%E2%98%82HttpServletResponsee) are required.");
 				return;
 			}
 			Logger.info("Updating Caver: Name = " + name + ", Status = " + status + ", Phone = " + phone);
 			dao.updateCaver(caverId,name, status, phone);
 			Logger.info("Caver with ID " + caverId + " updated.");
 			response.sendRedirect(request.getContextPath() + "/CrudServlet");
+			action = null;
 		} else if ("insert".equals(action)) {
 			//default action (could be adding a new caver, etc.)
 			String name = request.getParameter("name");
@@ -96,6 +98,7 @@ public class CrudServlet extends HttpServlet {
 			//forward to the JSP page
 			RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
 			dispatcher.forward(request, response);
+			action = null;
 		}
 		else {		
 			//Read cavers from db
@@ -106,6 +109,7 @@ public class CrudServlet extends HttpServlet {
 			//forward to the JSP page
 			RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
 			dispatcher.forward(request, response);
+			action = null;
 		}
 		
 	}

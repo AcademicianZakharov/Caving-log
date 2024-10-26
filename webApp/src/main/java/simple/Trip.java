@@ -10,9 +10,9 @@ public class Trip {
 	private Timestamp start_time;
 	private Timestamp end_time;
 	private int group_size;
-	private int max_trip_length;
+	private double max_trip_length;
 
-	public Trip(int a, int b, String c, Timestamp d, Timestamp e, int f, int g) {
+	public Trip(int a, int b, String c, Timestamp d, Timestamp e, int f, double g) {
 		this.trip_id = a;
 		this.caver_id = b;
 		this.cave_name = c;
@@ -56,7 +56,7 @@ public class Trip {
 	    return this.group_size;
 	}
 	
-	public int getMax_trip_length() {
+	public double getMax_trip_length() {
         return this.max_trip_length;
     }
 	
@@ -85,7 +85,7 @@ public class Trip {
 	    this.group_size = newGroup_size;
 	}
 	
-	public void setMax_trip_length(int newMax_trip_length) {
+	public void setMax_trip_length(double newMax_trip_length) {
         this.max_trip_length = newMax_trip_length;
     }
 }
