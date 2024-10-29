@@ -27,6 +27,7 @@
         <thead>
             <tr>
                 <th>Trip ID</th>
+                <th>Caver ID</th>
                 <th>Cave Name</th>
                 <th>Start Time</th>
                 <th>End Time</th>
@@ -37,13 +38,14 @@
         </thead>
         <tbody>
             <%
-				int caverId = Integer.parseInt(request.getParameter("caver_id"));
+				int caverId = (Integer)(session.getAttribute("caver_id"));
 
                 for (Trip trip : trips) {
                 	if(trip.getCaver_id() == caverId){
             %>
             <tr>
                 <td><%= trip.getTrip_id() %></td>
+                <td><%= caverId %></td>
                 <td><%= trip.getCave_name() %></td>
                 <td><%= trip.getStart_time() %></td>
                 <td><%= trip.getEnd_time() %></td>
@@ -71,7 +73,7 @@
         </tbody>
 
     </table>
-    <form action="register_trip.jsp" method="get" style="display:inline;">
+    <form action="register_trip.jsp" method="post" style="display:inline;">
         <input type="hidden" name="caver_id" value="<%= caverId %>">
     	<button type="submit" class="insert-btn">Add trip</button>
     </form>

@@ -16,4 +16,12 @@
         <servlet-name>CrudServlet</servlet-name>
         <url-pattern>/CrudServlet</url-pattern>
     </servlet-mapping>
+        <servlet>
+        <servlet-name>TripCrudServlet</servlet-name>
+        <servlet-class>simple.TripCrudServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TripCrudServlet</servlet-name>
+        <url-pattern>/TripCrudServlet</url-pattern>
+    </servlet-mapping>
 </web-app>

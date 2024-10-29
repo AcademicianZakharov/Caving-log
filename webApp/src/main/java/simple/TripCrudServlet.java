@@ -20,7 +20,6 @@ import org.tinylog.Logger;
 /**
  * Servlet implementation class TripCrudServelet
  */
-@WebServlet("/TripCrudServlet")
 public class TripCrudServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -41,6 +40,11 @@ public class TripCrudServlet extends HttpServlet {
         List<Trip> trips = dao.getTrips();
         HttpSession session = request.getSession();
         session.setAttribute("trips", trips);
+        
+        Logger.info("got caver_id: " + request.getParameter("caver_id"));
+        int caverId = (Integer)(request.getAttribute("caver_id"));
+        session.setAttribute("caver_id", caverId);
+        
         RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
         dispatcher.forward(request, response);
 
@@ -80,6 +84,7 @@ public class TripCrudServlet extends HttpServlet {
             Logger.info("Trip with ID " + tripId + " updated.");
             response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
 		} else if ("insert".equals(action)) {
+			Logger.info("got caver_id: " + request.getParameter("caver_id"));
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
             String caveName = request.getParameter("cave_name");
             Timestamp startTime = Timestamp.valueOf(request.getParameter("start_time"));
@@ -97,6 +102,11 @@ public class TripCrudServlet extends HttpServlet {
             List<Trip> trips = dao.getTrips();
             HttpSession session = request.getSession();
             session.setAttribute("trips", trips);
+            
+            
+            int caverId = Integer.parseInt(request.getParameter("caver_id"));
+            session.setAttribute("caver_id", caverId);
+            
             RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
             dispatcher.forward(request, response);
 		}
