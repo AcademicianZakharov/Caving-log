@@ -14,11 +14,11 @@
         <form action="CrudServlet" method="post">
             <div>
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" class="input-field"  maxlength="20" required>
+                <input type="text" id="name" name="name" class="input-field"  pattern="^[A-Za-z\s]{1,100}$" required>
             </div>
             <div>
                 <label for="status">Status:</label>
-                <input type="text" id="status" name="status" class="input-field" maxlength="20"  required>
+                <input type="text" id="status" name="status" class="input-field" pattern="^[A-Za-z\s]{1,100}$" required>
             </div>
             <div>
                 <label for="phone">Phone Number:</label>
@@ -27,7 +27,9 @@
             <input type="hidden" name="action" value="insert">
             <button type="submit" style="margin-top: 10px;">Add Caver</button>
         </form>
-
+	<form action="CrudServlet" method="get" >
+    	<button type="submit" class="insert-btn">Back to Cavers</button>
+    </form>
     </div>
 </html>
 

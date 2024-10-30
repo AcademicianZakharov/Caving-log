@@ -80,7 +80,6 @@ public class CrudServlet extends HttpServlet {
 			response.sendRedirect(request.getContextPath() + "/CrudServlet");
 			action = null;
 		} else if ("insert".equals(action)) {
-			//default action (could be adding a new caver, etc.)
 			String name = request.getParameter("name");
 			String status = request.getParameter("status");
 			String phone = request.getParameter("phone");
@@ -96,6 +95,7 @@ public class CrudServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 			Logger.info("New caver added: " + name);
+			//show the caver in a jsp page
 			List<Caver> cavers = dao.getCavers(); 
 			//store the list of cavers in the session
 			HttpSession session = request.getSession();

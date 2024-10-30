@@ -77,6 +77,9 @@
         <input type="hidden" name="caver_id" value="<%= caverId %>">
     	<button type="submit" class="insert-btn">Add trip</button>
     </form>
+    <form action="CrudServlet" method="get" >
+    	<button type="submit" class="insert-btn">Back to Cavers</button>
+    </form>
     <%
         } else {
     %>

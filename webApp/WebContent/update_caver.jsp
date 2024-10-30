@@ -14,15 +14,15 @@
         <form action="CrudServlet" method="post">
             <div>
                 <label for="name">Name:</label>
-                <input type="text" id="name" name="name" class="input-field" required>
+                <input type="text" id="name" name="name" class="input-field"  pattern="^[A-Za-z\s]{1,100}$" required>
             </div>
             <div>
                 <label for="status">Status:</label>
-                <input type="text" id="status" name="status" class="input-field" required>
+                <input type="text" id="status" name="status" class="input-field" pattern="^[A-Za-z\s]{1,100}$" required>
             </div>
             <div>
                 <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phone" class="input-field" required>
+                <input type="tel" id="phone" name="phone" class="input-field" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
             </div>
             <input type="hidden" name="action" value="update">
             <input type="hidden" name="caver_id" value="<%=request.getParameter("caver_id") %>">

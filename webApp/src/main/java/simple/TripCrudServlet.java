@@ -41,10 +41,6 @@ public class TripCrudServlet extends HttpServlet {
         HttpSession session = request.getSession();
         session.setAttribute("trips", trips);
         
-        Logger.info("got caver_id: " + request.getParameter("caver_id"));
-        int caverId = (Integer)(request.getAttribute("caver_id"));
-        session.setAttribute("caver_id", caverId);
-        
         RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
         dispatcher.forward(request, response);
 
@@ -56,13 +52,9 @@ public class TripCrudServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
 		String action = request.getParameter("action");
 		DaoFile dao = new DaoFile();
+		dao.testConnection();
 
-		//supposed to be in the else for reading
-//        List<Trip> trips = dao.getTrips();
-//        HttpSession session = request.getSession();
-//        session.setAttribute("trips", trips);
-//        RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
-//        dispatcher.forward(request, response);
+
 		dao.testConnection();
 		if ("delete".equals(action)) {
             int tripId = Integer.parseInt(request.getParameter("trip_id"));
@@ -70,6 +62,7 @@ public class TripCrudServlet extends HttpServlet {
             
             Logger.info("Trip with ID " + tripId + " deleted.");
             response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
+            action = null;
 			
 		} else if ("update".equals(action)) {
             int tripId = Integer.parseInt(request.getParameter("trip_id"));
@@ -83,6 +76,7 @@ public class TripCrudServlet extends HttpServlet {
             
             Logger.info("Trip with ID " + tripId + " updated.");
             response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
+            action = null;
 		} else if ("insert".equals(action)) {
 			Logger.info("got caver_id: " + request.getParameter("caver_id"));
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
@@ -96,6 +90,7 @@ public class TripCrudServlet extends HttpServlet {
             
             Logger.info("New trip added: Cave = " + caveName);
             response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
+            action = null;
 		}
 		else {		
 			//Read trips from db
@@ -103,12 +98,12 @@ public class TripCrudServlet extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("trips", trips);
             
-            
             int caverId = Integer.parseInt(request.getParameter("caver_id"));
             session.setAttribute("caver_id", caverId);
             
             RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
             dispatcher.forward(request, response);
+            action = null;
 		}
 		
 	}
