@@ -20,13 +20,13 @@ public class DaoFile {
 	String sql_delete_caver = "DELETE FROM cavers WHERE caver_id = ?";
 	String sql_update_caver = "UPDATE cavers SET name = ?, status = ?, phone = ? WHERE caver_id = ?";
 
-	//remember to change it for a given caver_id
 	String SQL_SELECT_TRIPS = "SELECT * FROM trips";
 	String SQL_INSERT_TRIP = "INSERT INTO trips (caver_id, cave_name, start_time, end_time, group_size, max_trip_length) VALUES (?, ?, ?, ?, ?, ?)";
 	String SQL_DELETE_TRIP = "DELETE FROM trips WHERE trip_id = ?";
 	String SQL_UPDATE_TRIP = "UPDATE trips SET cave_name = ?, start_time = ?, end_time = ?, group_size = ?, max_trip_length = ? WHERE trip_id = ?";
 
 	//establish connection to the db
+	
 	private ConnectionManager connectionManager;
 	public DaoFile() {
 		//Logger.info("DaoFile!");

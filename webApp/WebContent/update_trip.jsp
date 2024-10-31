@@ -18,17 +18,15 @@
             </div>
             <div>
                 <label for="start_time">Start Time:</label>
-                <input type="text" id="start_time" name="start_time" class="input-field"  
-                pattern="((((19|20)([2468][048]|[13579][26]|0[48])|2000)-02-29|((19|20)[0-9]{2}-(0[4678]|1[02])-(0[1-9]|[12][0-9]|30)|(19|20)[0-9]{2}-(0[1359]|11)-(0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}-02-(0[1-9]|1[0-9]|2[0-8])))\s([01][0-9]|2[0-3]):([012345][0-9]):([012345][0-9]))" required>
+                <input type="text" id="start_time" name="start_time" class="input-field"  required>
             </div>
             <div>
                 <label for="end_time">End Time:</label>
-                <input type="text" id="end_time" name="end_time" class="input-field" 
-                pattern="((((19|20)([2468][048]|[13579][26]|0[48])|2000)-02-29|((19|20)[0-9]{2}-(0[4678]|1[02])-(0[1-9]|[12][0-9]|30)|(19|20)[0-9]{2}-(0[1359]|11)-(0[1-9]|[12][0-9]|3[01])|(19|20)[0-9]{2}-02-(0[1-9]|1[0-9]|2[0-8])))\s([01][0-9]|2[0-3]):([012345][0-9]):([012345][0-9]))" required>
+                <input type="text" id="end_time" name="end_time" class="input-field" required>
             </div>
             <div>
                 <label for="group_size">Group Size:</label>
-                <input type="tel" id="group_size" name="group_size" class="input-field" pattern="^[1-9]\d$"  required>
+                <input type="tel" id="group_size" name="group_size" class="input-field" required>
             </div>
             <div>
                 <label for="max_trip_length">Max Trip Length:</label>
