@@ -82,6 +82,8 @@ public class DaoFile {
 			}
 		}
 	}
+	
+//	TestDaoFile.testaddcaver();
 	//add new trip
 	public void addTrip(int caverId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
 		try (Connection connection = connectionManager.getConnection();

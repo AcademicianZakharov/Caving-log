@@ -31,6 +31,8 @@
     	<button type="submit" class="insert-btn">Back to Cavers</button>
     </form>
     </div>
+    <script src="validate_form.js"></script>
+    </body>
 </html>
 
 
