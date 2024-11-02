@@ -28,15 +28,9 @@ class DaoFileTest {
 		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
 		Connection mockConnection = mock(Connection.class);
 		PreparedStatement ps = mock(PreparedStatement.class);
-		//ResultSet result = mock(ResultSet.class);
 		//mock behaviour
 		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
-        when(mockConnection.prepareStatement("INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)"))
-        .thenReturn(ps);
-		//when(mockConnection.prepareStatement(any(String.class))).thenReturn(ps);
-		//when(ps.executeQuery()).thenReturn(result);
-		//when(result.next()).thenReturn(true).thenReturn(true).thenReturn(false);
-        //dao object
+        when(mockConnection.prepareStatement("INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)")).thenReturn(ps);
 		DaoFile dao = new DaoFile(mockConnectionManager);
 		//test data
         String name = "jack";
@@ -58,7 +52,6 @@ class DaoFileTest {
 		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
 		Connection mockConnection = mock(Connection.class);
 		PreparedStatement ps = mock(PreparedStatement.class);
-		//ResultSet result = mock(ResultSet.class);
 		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
         when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
         when(mockConnection.prepareStatement("INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)"))
@@ -90,6 +83,9 @@ class DaoFileTest {
         assertEquals(2, cavers.size());
         assertEquals("John", cavers.get(0).getName());
         assertEquals("Jane", cavers.get(1).getName());
+        verify(ps).close();
+        verify(rs).close();
+        verify(mockConnection).close();
     }
     
     @Test
@@ -114,6 +110,9 @@ class DaoFileTest {
         verify(ps).setString(3, phone);
         verify(ps).setInt(4, caverId);
         verify(ps).executeUpdate();
+        verify(ps).close();
+        verify(mockConnection).close();
+        
     }
     
     @Test
@@ -131,6 +130,8 @@ class DaoFileTest {
         dao.deleteCaver(caverId);
         verify(ps).setInt(1, caverId);
         verify(ps).executeUpdate();
+        verify(ps).close();
+        verify(mockConnection).close();
     }
     
     @Test
@@ -150,8 +151,7 @@ class DaoFileTest {
         double maxTripLength = 2.5;
         
         DaoFile dao = new DaoFile(mockConnectionManager);
-
-        
+ 
         dao.addTrip(caverId, caveName, startTime, endTime, groupSize, maxTripLength);
         verify(ps).setInt(1, caverId);
         verify(ps).setString(2, caveName);
@@ -160,6 +160,88 @@ class DaoFileTest {
         verify(ps).setInt(5, groupSize);
         verify(ps).setDouble(6, maxTripLength);
         verify(ps).executeUpdate();
+        verify(ps).close();
+        verify(mockConnection).close();
+    }
+    
+    @Test
+    void testGetTrips() throws SQLException {
+    	ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		PreparedStatement ps = mock(PreparedStatement.class);
+		ResultSet rs = mock(ResultSet.class);
+		
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement("SELECT * FROM trips")).thenReturn(ps);
+    	
+        //arrange
+        when(ps.executeQuery()).thenReturn(rs);
+        when(rs.next()).thenReturn(true, false);
+        when(rs.getInt("trip_id")).thenReturn(1);
+        when(rs.getInt("caver_id")).thenReturn(1);
+        when(rs.getString("cave_name")).thenReturn("Test Cave");
+        when(rs.getTimestamp("start_time")).thenReturn(new Timestamp(System.currentTimeMillis()));
+        when(rs.getTimestamp("end_time")).thenReturn(new Timestamp(System.currentTimeMillis() + 3600000));
+        when(rs.getInt("group_size")).thenReturn(5);
+        when(rs.getDouble("max_trip_length")).thenReturn(2.5);
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+        
+        List<Trip> trips = dao.getTrips();
+        assertEquals(1, trips.size());
+        assertEquals("Test Cave", trips.get(0).getCave_name());
+        verify(ps).close();
+        verify(rs).close();
+        verify(mockConnection).close();
+    }
+    
+    @Test
+    void testUpdateTrip() throws SQLException {
+    	ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+    	Connection mockConnection = mock(Connection.class);
+    	PreparedStatement ps = mock(PreparedStatement.class);
+    	
+    	when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+    	when(mockConnection.prepareStatement("UPDATE trips SET cave_name = ?, start_time = ?, end_time = ?, group_size = ?, max_trip_length = ? WHERE trip_id = ?")).thenReturn(ps);
+    	
+    	int tripID = 1;
+    	String caveName = "Othello Tunnels";
+    	Timestamp startTime = new Timestamp(System.currentTimeMillis());
+    	Timestamp endTime = new Timestamp(System.currentTimeMillis() + 3600000);
+        int groupSize = 5;
+        double maxTripLength = 2.5;
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+        
+        dao.updateTrip(tripID, caveName, startTime, endTime, groupSize, maxTripLength);
+        verify(ps).setString(1, caveName);
+        verify(ps).setTimestamp(2, startTime);
+        verify(ps).setTimestamp(3, endTime);
+        verify(ps).setInt(4, groupSize);
+        verify(ps).setDouble(5, maxTripLength);
+        verify(ps).setInt(6, tripID);
+        verify(ps).executeUpdate();
+        verify(ps).close();
+    	
+    }
+    
+    @Test
+    void testDeleteTrip() throws SQLException {
+		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		PreparedStatement ps = mock(PreparedStatement.class);
+		
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+        when(mockConnection.prepareStatement("DELETE FROM trips WHERE trip_id = ?")).thenReturn(ps);
+        int tripId = 1;
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+
+        dao.deleteTrip(tripId);
+        verify(ps).setInt(1, tripId);
+        verify(ps).executeUpdate();
+        verify(ps).close();
+        verify(mockConnection).close();
     }
     
 }
