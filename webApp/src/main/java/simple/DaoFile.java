@@ -23,7 +23,6 @@ public class DaoFile {
 		} catch(NamingException e) {
 			connectionManager = null;
 			Logger.error(e);
-			e.printStackTrace();
 		}
 	}
 	
@@ -34,17 +33,21 @@ public class DaoFile {
 
 	}
 	public void testConnection() {
-		Connection connection = null;
-		try {
-			connection = connectionManager.getConnection();
-			if (connection != null) {
-				Logger.info("----------------db connection-------------");
-			}
-			connection.close();
-		} catch (SQLException e) {
-			Logger.info("db connection error");
-			e.printStackTrace();
-		} 
+		if(connectionManager != null) {
+			Connection connection = null;
+			try {
+				connection = connectionManager.getConnection();
+				if (connection != null) {
+					Logger.info("----------------db connection-------------");
+				}
+				connection.close();
+			} catch (SQLException e) {
+				Logger.info("db connection error");
+			} 
+		}
+		else {
+			Logger.error("Connection manager is null");
+		}
 	}
 
 	//add new caver record in the db

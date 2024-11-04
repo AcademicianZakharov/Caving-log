@@ -5,7 +5,8 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -72,6 +73,20 @@ public class TripCrudServlet extends HttpServlet {
             int groupSize = Integer.parseInt(request.getParameter("group_size"));
             double maxTripLength = Double.parseDouble(request.getParameter("max_trip_length"));
             
+			//Check valid input
+			String tripIdRegex = "^[A-Za-z\\s]{1,100}$";
+			String caveNameRegex = "^[A-Za-z\\s]{1,100}$";
+			String startTimeRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}";
+			String endTimeRegex = "^[A-Za-z\\s]{1,100}$";
+			String groupSizeRegex = "^[A-Za-z\\s]{1,100}$";
+			String maxTripLengthRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}";
+			
+//			if (!isValid(tripId, tripIdRegex) || !isValid(caveName, caveNameRegex) || !isValid(startTime, startTimeRegex)
+//					|| !isValid(endTime, endTimeRegex)|| !isValid(groupSize, groupSizeRegex)|| !isValid(maxTripLength, maxTripLengthRegex)) {
+//				out.println("Error: All fields (name, status, phone) are required and must be in the correct format.");
+//				return;
+//			}
+//            
             dao.updateTrip(tripId, caveName, startTime, endTime, groupSize, maxTripLength);
             
             Logger.info("Trip with ID " + tripId + " updated.");
@@ -107,5 +122,11 @@ public class TripCrudServlet extends HttpServlet {
 		}
 		
 	}
+	
+//	private boolean isValid(String input, String regex) {
+//		Pattern pattern = Pattern.compile(regex);
+//		Matcher matcher = pattern.matcher(input);
+//		return matcher.matches();
+//	}
 
 }
