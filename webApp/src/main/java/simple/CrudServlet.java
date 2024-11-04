@@ -5,7 +5,8 @@ import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -69,9 +70,13 @@ public class CrudServlet extends HttpServlet {
 			String name = request.getParameter("name");
 			String status = request.getParameter("status");
 			String phone = request.getParameter("phone");
-			//Check for empty parameters
-			if (name == null || name.isEmpty() || status == null || status.isEmpty() || phone == null || phone.isEmpty()) {
-				out.println("Error: All fields (name, status, phoneclipse-javadoc:%E2%98%82=webApp/src%5C/main%5C/java=/optional=/true=/=/maven.pomderived=/true=/%3Csimple%7BCrudServlet.java%E2%98%83CrudServlet~doPost~QHttpServletRequest;~QHttpServletResponse;%E2%98%82HttpServletResponsee) are required.");
+			//Check valid input
+			String nameRegex = "^[A-Za-z\\s]{1,100}$";
+			String statusRegex = "^[A-Za-z\\s]{1,100}$";
+			String phoneRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}";
+			
+			if (!isValid(name, nameRegex) || !isValid(status, statusRegex) || !isValid(phone, phoneRegex)) {
+				out.println("Error: All fields (name, status, phone) are required and must be in the correct format.");
 				return;
 			}
 			Logger.info("Updating Caver: Name = " + name + ", Status = " + status + ", Phone = " + phone);
@@ -83,12 +88,15 @@ public class CrudServlet extends HttpServlet {
 			String name = request.getParameter("name");
 			String status = request.getParameter("status");
 			String phone = request.getParameter("phone");
-			//Check for empty parameters
-			if (name == null || name.isEmpty() || status == null || status.isEmpty() || phone == null || phone.isEmpty()) {
-				out.println("Error: All fields (name, status, phone) are required.");
+			//Check valid input
+			String nameRegex = "^[A-Za-z\\s]{1,100}$";
+			String statusRegex = "^[A-Za-z\\s]{1,100}$";
+			String phoneRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}";
+			
+			if (!isValid(name, nameRegex) || !isValid(status, statusRegex) || !isValid(phone, phoneRegex)) {
+				out.println("Error: All fields (name, status, phone) are required and must be in the correct format.");
 				return;
 			}
-			Logger.info("Adding a new Caver: Name = " + name + ", Status = " + status + ", Phone = " + phone);
 			try {
 				dao.addCaver(name, status, phone);
 			} catch (SQLException e) {
@@ -119,4 +127,9 @@ public class CrudServlet extends HttpServlet {
 		
 	}
 
+	private boolean isValid(String input, String regex) {
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(input);
+		return matcher.matches();
+	}
 }

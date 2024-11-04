@@ -173,7 +173,6 @@ public class DaoFile {
 				PreparedStatement ps = connection.prepareStatement(DELETE_CAVER)) {
 			ps.setInt(1, caver_id);
 			ps.executeUpdate();
-			connection.close();
 		} catch (SQLException e) {
 			Logger.error("Error deleting caver", e);
 			e.printStackTrace();
