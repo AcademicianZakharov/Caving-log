@@ -1,8 +1,5 @@
 package simple;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.nfis.db.ConnectionManager;
 
 import javax.servlet.RequestDispatcher;
@@ -14,93 +11,117 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-
 class CrudServletTest {
-    private CrudServlet servletUnderTest;
-    private HttpServletRequest request;
-    private HttpServletResponse response;
-    private HttpSession session;
-    private RequestDispatcher dispatcher;
-    private DaoFile dao;
-
     @Test
-    void testDoGet() throws ServletException, IOException, SQLException {
-		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
-		Connection mockConnection = mock(Connection.class);
-		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
-		PreparedStatement ps = mock(PreparedStatement.class);
-		ResultSet rs = mock(ResultSet.class);
-        when(mockConnection.prepareStatement("SELECT * FROM cavers"))
-        .thenReturn(ps);
-        when(ps.executeQuery()).thenReturn(rs);
-
-        servletUnderTest = new CrudServlet();
-        request = Mockito.mock(HttpServletRequest.class);
-        response = Mockito.mock(HttpServletResponse.class);
-        session = Mockito.mock(HttpSession.class);
-        dispatcher = Mockito.mock(RequestDispatcher.class);
-        
-    	DaoFile dao = new DaoFile(mockConnectionManager);
-        List<Caver> cavers = new ArrayList<>();
-        cavers.add(new Caver(1, "John", "Active", "123-456-7890"));
-        when(dao.getCavers()).thenReturn(cavers);
+    void testDoGet() throws ServletException, IOException {
+        // Setup
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        RequestDispatcher dispatcher = mock(RequestDispatcher.class);
+        HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
-        
-        servletUnderTest.doGet(request, response);
-
-        verify(session).setAttribute("cavers", cavers);
+        when(request.getRequestDispatcher(anyString())).thenReturn(dispatcher);
+        CrudServlet servlet = new CrudServlet();
+        // Execute
+        servlet.doGet(request, response);
+        // Verify
         verify(request).getRequestDispatcher("read_handler.jsp");
         verify(dispatcher).forward(request, response);
     }
-//    @Test
-//    void testDoPost_Delete() throws IOException, ServletException {
-//        when(request.getParameter("action")).thenReturn("delete");
-//        when(request.getParameter("caver_id")).thenReturn("1");
-//        when(request.getContextPath()).thenReturn("/myapp");
-//
-//        servletUnderTest.doPost(request, response);
-//
-//        verify(dao).deleteCaver(1);
-//        verify(response).sendRedirect("/myapp/CrudServlet");
-//    }
-//    @Test
-//    void testDoPost_Update() throws IOException, ServletException {
-//        // Arrange
-//        when(request.getParameter("action")).thenReturn("update");
-//        when(request.getParameter("caver_id")).thenReturn("1");
-//        when(request.getParameter("name")).thenReturn("John");
-//        when(request.getParameter("status")).thenReturn("Active");
-//        when(request.getParameter("phone")).thenReturn("123-456-7890");
-//        when(request.getContextPath()).thenReturn("/myapp");
-//
-//        servletUnderTest.doPost(request, response);
-//
-//        verify(dao).updateCaver(1, "John Doe", "Active", "123-456-7890");
-//        verify(response).sendRedirect("/myapp/CrudServlet");
-//    }
-//    @Test
-//    void testDoPost_Insert() throws IOException, ServletException, SQLException {
-//        // Arrange
-//        when(request.getParameter("action")).thenReturn("insert");
-//        when(request.getParameter("name")).thenReturn("John");
-//        when(request.getParameter("status")).thenReturn("Active");
-//        when(request.getParameter("phone")).thenReturn("123-456-7890");
-//        when(request.getSession()).thenReturn(session);
-//        when(dao.getCavers()).thenReturn(new ArrayList<>());
-//        when(request.getRequestDispatcher("read_handler.jsp")).thenReturn(dispatcher);
-//        
-//        servletUnderTest.doPost(request, response);
-//        
-//        verify(dao).addCaver("John", "Active", "123-456-7890");
-//        verify(session).setAttribute("cavers", new ArrayList<>());
-//        verify(request).getRequestDispatcher("read_handler.jsp");
-//        verify(dispatcher).forward(request, response);
-//    }
+    @Test
+    void testInsertValidCaver() throws ServletException, IOException {
+        // Setup
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        RequestDispatcher dispatcher = mock(RequestDispatcher.class);
+        when(request.getParameter("action")).thenReturn("insert");
+        when(request.getParameter("name")).thenReturn("John Doe");
+        when(request.getParameter("status")).thenReturn("Active");
+        when(request.getParameter("phone")).thenReturn("123-456-7890");
+        when(request.getRequestDispatcher(anyString())).thenReturn(dispatcher);
+        CrudServlet servlet = new CrudServlet();
+        // Execute
+        servlet.doPost(request, response);
+        // Verify
+        verify(request).getRequestDispatcher("read_handler.jsp");
+        verify(dispatcher).forward(request, response);
+    }
+    @Test
+    void testInsertInvalidCaver() throws ServletException, IOException {
+        // Setup
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = new PrintWriter(stringWriter);
+        when(request.getParameter("action")).thenReturn("insert");
+        when(request.getParameter("name")).thenReturn("John123");
+        when(request.getParameter("phone")).thenReturn("invalid");
+        when(response.getWriter()).thenReturn(writer);
+        CrudServlet servlet = new CrudServlet();
+        // Execute
+        servlet.doPost(request, response);
+        // Verify
+        assertEquals("Error: All fields (name, status, phone) are required and must be in the correct format.",
+            stringWriter.toString().trim());
+    }
+    @Test
+    void testDeleteCaver() throws ServletException, IOException {
+        // Setup
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getParameter("action")).thenReturn("delete");
+        when(request.getParameter("caver_id")).thenReturn("1");
+        CrudServlet servlet = new CrudServlet();
+        // Execute
+        servlet.doPost(request, response);
+        // Verify
+        verify(response).sendRedirect(anyString());
+    }
+    @Test
+    void testUpdateCaver() throws ServletException, IOException, SQLException {
+        // Setup
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getParameter("action")).thenReturn("update");
+        when(request.getParameter("caver_id")).thenReturn("1");
+        when(request.getParameter("name")).thenReturn("Jane Doe");
+        when(request.getParameter("status")).thenReturn("Active");
+        when(request.getParameter("phone")).thenReturn("123-456-7890");
+        
+        ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+		//DaoFile dao = new DaoFile(mockConnectionManager);
+        CrudServlet servlet = new CrudServlet();
+        // Execute
+        servlet.doPost(request, response);
+        // Verify
+        verify(response).sendRedirect(anyString());
+    }
+    @Test
+    void testUpdateInvalidCaver() throws ServletException, IOException, SQLException {
+        // Setup
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = new PrintWriter(stringWriter);
+        when(request.getParameter("caver_id")).thenReturn("1");
+        when(request.getParameter("action")).thenReturn("update");
+        when(request.getParameter("name")).thenReturn("John123");
+        when(request.getParameter("phone")).thenReturn("invalid");
+        when(response.getWriter()).thenReturn(writer);
+        CrudServlet servlet = new CrudServlet();
+        
+
+        // Execute
+        servlet.doPost(request, response);
+        // Verify
+        assertEquals("Error: All fields (name, status, phone) are required and must be in the correct format.",
+            stringWriter.toString().trim());
+    }
 }

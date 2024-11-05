@@ -22,7 +22,7 @@
             </div>
             <div>
                 <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phone" class="input-field" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}" required>
+                <input type="tel" id="phone" name="phone" class="input-field" pattern="^[0-9]{3}-[0-9]{3}-[0-9]{4}$" required>
             </div>
             <input type="hidden" name="action" value="insert">
             <button type="submit" style="margin-top: 10px;">Add Caver</button>

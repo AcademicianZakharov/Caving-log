@@ -53,6 +53,10 @@ public class CrudServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
+		String nameRegex = "^[A-Za-z\\s]{1,100}$";
+		String statusRegex = "^[A-Za-z\\s]{1,100}$";
+		String phoneRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}";
+		
 		String action = request.getParameter("action");
 		DaoFile dao = new DaoFile();
 		PrintWriter out = response.getWriter();
@@ -70,10 +74,6 @@ public class CrudServlet extends HttpServlet {
 			String name = request.getParameter("name");
 			String status = request.getParameter("status");
 			String phone = request.getParameter("phone");
-			//Check valid input
-			String nameRegex = "^[A-Za-z\\s]{1,100}$";
-			String statusRegex = "^[A-Za-z\\s]{1,100}$";
-			String phoneRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}";
 			
 			if (!isValid(name, nameRegex) || !isValid(status, statusRegex) || !isValid(phone, phoneRegex)) {
 				out.println("Error: All fields (name, status, phone) are required and must be in the correct format.");
@@ -89,9 +89,7 @@ public class CrudServlet extends HttpServlet {
 			String status = request.getParameter("status");
 			String phone = request.getParameter("phone");
 			//Check valid input
-			String nameRegex = "^[A-Za-z\\s]{1,100}$";
-			String statusRegex = "^[A-Za-z\\s]{1,100}$";
-			String phoneRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}";
+
 			
 			if (!isValid(name, nameRegex) || !isValid(status, statusRegex) || !isValid(phone, phoneRegex)) {
 				out.println("Error: All fields (name, status, phone) are required and must be in the correct format.");
