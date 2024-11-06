@@ -20,11 +20,7 @@ VALUES
   ('Alice', 'safe', '604123456'),
   ('Bob', 'safe', '604123456'),
   ('Emily', 'safe', '604123456'),
-  ('jack', 'safe', '604123456'),
-  ('jordan', 'safe', '604123456'),
-  ('Amy', 'safe', '604123456'),
-  ('Jerry', 'safe', '604123456'),
-  ('Jasmine', 'safe', '604123456');
+  ('jack', 'safe', '604123456');
 -- Create the trips table with auto-incrementing trip_id
 CREATE TABLE trips(
   trip_id SERIAL PRIMARY KEY,   -- SERIAL will auto-increment the trip_id

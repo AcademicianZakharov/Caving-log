@@ -29,7 +29,8 @@ class TripCrudServletTest {
         Timestamp startTime = new Timestamp(System.currentTimeMillis());
         Timestamp endTime = new Timestamp(System.currentTimeMillis() + 3600000);
 		mockTrips.add(new Trip(1, 1, "Othello Tunnels", startTime, endTime, 4, 20.5));
-		when(mockDao.getTrips()).thenReturn(mockTrips); }
+		when(mockDao.getTrips()).thenReturn(mockTrips); 
+		}
 	
     @Test
     void testDoGet() throws ServletException, IOException {
@@ -40,11 +41,11 @@ class TripCrudServletTest {
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(request.getRequestDispatcher(anyString())).thenReturn(dispatcher);
-        CrudServlet servlet = new CrudServlet(mockDao);
+        TripCrudServlet servlet = new TripCrudServlet(mockDao);
         // Execute
         servlet.doGet(request, response);
         // Verify
-        verify(request).getRequestDispatcher("read_handler.jsp");
+        verify(request).getRequestDispatcher("view_trips.jsp");
         verify(dispatcher).forward(request, response);
     }
     @Test
@@ -56,27 +57,21 @@ class TripCrudServletTest {
         HttpSession session = mock(HttpSession.class);
         when(request.getSession()).thenReturn(session);
         when(request.getRequestDispatcher(anyString())).thenReturn(dispatcher);
+        
         when(request.getParameter("action")).thenReturn("insert");
         when(request.getParameter("trip_id")).thenReturn("1");
-        when(request.getParameter("name")).thenReturn("John");
-        when(request.getParameter("status")).thenReturn("Active");
-        when(request.getParameter("phone")).thenReturn("123-456-7890");
-//        int caverId = 1;
-//        String caveName = "Test Cave";
-//        Timestamp startTime = new Timestamp(System.currentTimeMillis());
-//        Timestamp endTime = new Timestamp(System.currentTimeMillis() + 3600000);
-//        int groupSize = 5;
-//        double maxTripLength = 2.5;
-        
-        ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
-		Connection mockConnection = mock(Connection.class);
-		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
-        CrudServlet servlet = new CrudServlet(mockDao);
+        when(request.getParameter("caver_id")).thenReturn("1");
+        when(request.getParameter("cave_name")).thenReturn("Othello tunnels");
+        when(request.getParameter("start_time")).thenReturn("2024-10-29 12:00:00");
+        when(request.getParameter("end_time")).thenReturn("2024-10-30 12:00:00");
+        when(request.getParameter("group_size")).thenReturn("4");
+        when(request.getParameter("max_trip_length")).thenReturn("24");
+
+        TripCrudServlet servlet = new TripCrudServlet(mockDao);
         // Execute
         servlet.doPost(request, response);
         // Verify
-        verify(request).getRequestDispatcher("read_handler.jsp");
-        verify(dispatcher).forward(request, response);
+        verify(response).sendRedirect(anyString());
     }
     @Test
     void testInsertInvalidTrip() throws ServletException, IOException {
@@ -86,14 +81,18 @@ class TripCrudServletTest {
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
         when(request.getParameter("action")).thenReturn("insert");
-        when(request.getParameter("name")).thenReturn("John1");
-        when(request.getParameter("phone")).thenReturn("invalid");
+        when(request.getParameter("caver_id")).thenReturn("1");
+        when(request.getParameter("cave_name")).thenReturn("Othello tunnels1");
+        when(request.getParameter("start_time")).thenReturn("2024-10-29 12:00:00");
+        when(request.getParameter("end_time")).thenReturn("2024-10-30 ");
+        when(request.getParameter("group_size")).thenReturn("4");
+        when(request.getParameter("max_trip_length")).thenReturn("24");
         when(response.getWriter()).thenReturn(writer);
-        CrudServlet servlet = new CrudServlet(mockDao);
+        TripCrudServlet servlet = new TripCrudServlet(mockDao);
         // Execute
         servlet.doPost(request, response);
         // Verify
-        assertEquals("Error: All fields (name, status, phone) are required and must be in the correct format.",
+        assertEquals("Error: All fields are required and must be in the correct format.",
             stringWriter.toString().trim());
     }
     @Test
@@ -103,7 +102,7 @@ class TripCrudServletTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getParameter("action")).thenReturn("delete");
         when(request.getParameter("trip_id")).thenReturn("1");
-        CrudServlet servlet = new CrudServlet(mockDao);
+        TripCrudServlet servlet = new TripCrudServlet(mockDao);
         // Execute
         servlet.doPost(request, response);
         // Verify
@@ -114,17 +113,16 @@ class TripCrudServletTest {
         // Setup
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getParameter("action")).thenReturn("update");
+        when(request.getParameter("action")).thenReturn("insert");
         when(request.getParameter("trip_id")).thenReturn("1");
-        when(request.getParameter("name")).thenReturn("John");
-        when(request.getParameter("status")).thenReturn("Active");
-        when(request.getParameter("phone")).thenReturn("123-456-7890");
-        
-        ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
-		Connection mockConnection = mock(Connection.class);
-		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+        when(request.getParameter("cave_name")).thenReturn("Othello tunnels");
+        when(request.getParameter("start_time")).thenReturn("2024-10-29 12:00:00");
+        when(request.getParameter("end_time")).thenReturn("2024-10-30 12:00:00");
+        when(request.getParameter("group_size")).thenReturn("4");
+        when(request.getParameter("max_trip_length")).thenReturn("24");
+
 		//DaoFile dao = new DaoFile(mockConnectionManager);
-        CrudServlet servlet = new CrudServlet(mockDao);
+        TripCrudServlet servlet = new TripCrudServlet(mockDao);
         // Execute
         servlet.doPost(request, response);
         // Verify
@@ -137,18 +135,21 @@ class TripCrudServletTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
+        when(request.getParameter("action")).thenReturn("insert");
         when(request.getParameter("trip_id")).thenReturn("1");
-        when(request.getParameter("action")).thenReturn("update");
-        when(request.getParameter("name")).thenReturn("John1");
-        when(request.getParameter("phone")).thenReturn("invalid");
+        when(request.getParameter("caver_id")).thenReturn("1");
+        when(request.getParameter("cave_name")).thenReturn("Othello tunnels");
+        when(request.getParameter("start_time")).thenReturn("2024-10-29 12:00:00");
+        when(request.getParameter("end_time")).thenReturn("2024-10-30 12:00:00");
+        when(request.getParameter("group_size")).thenReturn("4");
+        when(request.getParameter("max_trip_length")).thenReturn("24");
         when(response.getWriter()).thenReturn(writer);
-        CrudServlet servlet = new CrudServlet(mockDao);
+        TripCrudServlet servlet = new TripCrudServlet(mockDao);
         
-
         // Execute
         servlet.doPost(request, response);
         // Verify
-        assertEquals("Error: All fields (name, status, phone) are required and must be in the correct format.",
+        assertEquals("Error: All fields are required and must be in the correct format.",
             stringWriter.toString().trim());
     }
 }

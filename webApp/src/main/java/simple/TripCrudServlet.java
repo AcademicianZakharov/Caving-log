@@ -18,11 +18,18 @@ import org.tinylog.Logger;
  */
 public class TripCrudServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private DaoFile dao;
 	/**
 	 * Default constructor.
 	 */
 	public TripCrudServlet() {
+		this(new DaoFile());
+	}
+	
+	//for tests
+	public TripCrudServlet(DaoFile dao) {
 		super();
+		this.dao = dao;
 	}
 	/**
 	 * handles HTTP GET method
@@ -33,8 +40,8 @@ public class TripCrudServlet extends HttpServlet {
 	 * @throws ServletException if a servlet error occurs
 	 * @throws IOException if an I/O error occurs
 	 */
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		DaoFile dao = new DaoFile();
 		dao.testConnection();
 		List<Trip> trips = dao.getTrips();
 		HttpSession session = request.getSession();
@@ -50,6 +57,7 @@ public class TripCrudServlet extends HttpServlet {
 	 * @throws ServletException if a servlet error occurs
 	 * @throws IOException if an I/O error occurs
 	 */
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//regex patterns
 		String caveNameRegex = "^[A-Za-z\\s]{1,100}$";
@@ -58,7 +66,7 @@ public class TripCrudServlet extends HttpServlet {
 		String maxTripLengthRegex = "^\\d*[\\.]?[\\d]*$";
 
 		String action = request.getParameter("action");
-		DaoFile dao = new DaoFile();
+		DaoFile dao = this.dao;
 		dao.testConnection();
 		PrintWriter out = response.getWriter();
 		if ("delete".equals(action)) {

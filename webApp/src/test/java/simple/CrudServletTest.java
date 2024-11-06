@@ -59,9 +59,6 @@ class CrudServletTest {
         when(request.getParameter("status")).thenReturn("Active");
         when(request.getParameter("phone")).thenReturn("123-456-7890");
         
-        ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
-		Connection mockConnection = mock(Connection.class);
-		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
         CrudServlet servlet = new CrudServlet(mockDao);
         // Execute
         servlet.doPost(request, response);
@@ -111,10 +108,6 @@ class CrudServletTest {
         when(request.getParameter("status")).thenReturn("Active");
         when(request.getParameter("phone")).thenReturn("123-456-7890");
         
-        ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
-		Connection mockConnection = mock(Connection.class);
-		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
-		//DaoFile dao = new DaoFile(mockConnectionManager);
         CrudServlet servlet = new CrudServlet(mockDao);
         // Execute
         servlet.doPost(request, response);
@@ -135,7 +128,6 @@ class CrudServletTest {
         when(response.getWriter()).thenReturn(writer);
         CrudServlet servlet = new CrudServlet(mockDao);
         
-
         // Execute
         servlet.doPost(request, response);
         // Verify
