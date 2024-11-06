@@ -53,12 +53,11 @@ class DaoFileTest {
 		Connection mockConnection = mock(Connection.class);
 		PreparedStatement ps = mock(PreparedStatement.class);
 		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
-        when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
         when(mockConnection.prepareStatement("INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)"))
             .thenThrow(new SQLException());
         
         DaoFile dao = new DaoFile(mockConnectionManager);
-        assertThrows(SQLException.class, () -> dao.addCaver("John Doe", "Active", "123-456-7890"));
+        assertThrows(SQLException.class, () -> dao.addCaver("John", "Active", "123-456-7890"));
     }
 
     @Test
@@ -115,6 +114,18 @@ class DaoFileTest {
         
     }
     
+//    @Test
+//    void testUpdateCaver_SQLException() throws SQLException {
+//		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+//		Connection mockConnection = mock(Connection.class);
+//		PreparedStatement ps = mock(PreparedStatement.class);
+//		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+//        when(mockConnection.prepareStatement("UPDATE cavers SET name = ?, status = ?, phone = ? WHERE caver_id = ?"))
+//            .thenThrow(new SQLException());
+//        
+//        DaoFile dao = new DaoFile(mockConnectionManager);
+//        assertThrows(SQLException.class, () -> dao.updateCaver(1, "John1", "Active", "a123-456-7890"));
+//    }
     @Test
     void testDeleteCaver() throws SQLException {
 		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);

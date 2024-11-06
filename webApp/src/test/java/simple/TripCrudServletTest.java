@@ -13,20 +13,23 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-class CrudServletTest {
+class TripCrudServletTest {
 	private DaoFile mockDao;
-	private List<Caver> mockCavers;
+	private List<Trip> mockTrips;
 	@BeforeEach void setUp() {
 		mockDao = mock(DaoFile.class); 
-		mockCavers = new ArrayList<>();
-		mockCavers.add(new Caver(1, "John", "Active", "123-456-7890"));
-		when(mockDao.getCavers()).thenReturn(mockCavers); }
+		mockTrips = new ArrayList<>();
+        Timestamp startTime = new Timestamp(System.currentTimeMillis());
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + 3600000);
+		mockTrips.add(new Trip(1, 1, "Othello Tunnels", startTime, endTime, 4, 20.5));
+		when(mockDao.getTrips()).thenReturn(mockTrips); }
 	
     @Test
     void testDoGet() throws ServletException, IOException {
@@ -45,7 +48,7 @@ class CrudServletTest {
         verify(dispatcher).forward(request, response);
     }
     @Test
-    void testInsertValidCaver() throws ServletException, IOException, SQLException {
+    void testInsertValidTrip() throws ServletException, IOException, SQLException {
         // change it
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -58,6 +61,12 @@ class CrudServletTest {
         when(request.getParameter("name")).thenReturn("John");
         when(request.getParameter("status")).thenReturn("Active");
         when(request.getParameter("phone")).thenReturn("123-456-7890");
+//        int caverId = 1;
+//        String caveName = "Test Cave";
+//        Timestamp startTime = new Timestamp(System.currentTimeMillis());
+//        Timestamp endTime = new Timestamp(System.currentTimeMillis() + 3600000);
+//        int groupSize = 5;
+//        double maxTripLength = 2.5;
         
         ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
 		Connection mockConnection = mock(Connection.class);
@@ -70,7 +79,7 @@ class CrudServletTest {
         verify(dispatcher).forward(request, response);
     }
     @Test
-    void testInsertInvalidCaver() throws ServletException, IOException {
+    void testInsertInvalidTrip() throws ServletException, IOException {
         // Setup
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
@@ -88,12 +97,12 @@ class CrudServletTest {
             stringWriter.toString().trim());
     }
     @Test
-    void testDeleteCaver() throws ServletException, IOException {
+    void testDeleteTrip() throws ServletException, IOException {
         // Setup
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getParameter("action")).thenReturn("delete");
-        when(request.getParameter("caver_id")).thenReturn("1");
+        when(request.getParameter("trip_id")).thenReturn("1");
         CrudServlet servlet = new CrudServlet(mockDao);
         // Execute
         servlet.doPost(request, response);
@@ -101,12 +110,12 @@ class CrudServletTest {
         verify(response).sendRedirect(anyString());
     }
     @Test
-    void testUpdateCaver() throws ServletException, IOException, SQLException {
+    void testUpdateTrip() throws ServletException, IOException, SQLException {
         // Setup
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         when(request.getParameter("action")).thenReturn("update");
-        when(request.getParameter("caver_id")).thenReturn("1");
+        when(request.getParameter("trip_id")).thenReturn("1");
         when(request.getParameter("name")).thenReturn("John");
         when(request.getParameter("status")).thenReturn("Active");
         when(request.getParameter("phone")).thenReturn("123-456-7890");
@@ -122,13 +131,13 @@ class CrudServletTest {
         verify(response).sendRedirect(anyString());
     }
     @Test
-    void testUpdateInvalidCaver() throws ServletException, IOException, SQLException {
+    void testUpdateInvalidTrip() throws ServletException, IOException, SQLException {
         // Setup
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
-        when(request.getParameter("caver_id")).thenReturn("1");
+        when(request.getParameter("trip_id")).thenReturn("1");
         when(request.getParameter("action")).thenReturn("update");
         when(request.getParameter("name")).thenReturn("John1");
         when(request.getParameter("phone")).thenReturn("invalid");
