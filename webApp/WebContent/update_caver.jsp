@@ -22,7 +22,7 @@
             </div>
             <div>
                 <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phone" class="input-field" value="<%=request.getParameter("previous_phone") %>" pattern="^[0-9]{3}-[0-9]{3}-[0-9]{4}$" required>
+                <input type="tel" id="phone" name="phone" class="input-field" value="<%=request.getParameter("previous_phone") %>" pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}$" required>
             </div>
             <input type="hidden" name="action" value="update">
             <input type="hidden" name="caver_id" value="<%=request.getParameter("caver_id") %>">

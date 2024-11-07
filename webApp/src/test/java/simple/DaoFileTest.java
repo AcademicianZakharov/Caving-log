@@ -1,11 +1,6 @@
 package simple;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import java.sql.Connection;
 import java.lang.String;
@@ -13,19 +8,19 @@ import java.sql.Timestamp;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.naming.NamingException;
 import org.nfis.db.ConnectionManager;
-import org.nfis.db.TomcatConnectionManager;
-import org.tinylog.Logger;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ * Unit tests for DaoFie
  */
-
 class DaoFileTest {
  
+	/**
+	 * tests adding a caver to the db
+	 * verifies if the parameters were added correctly to the preparedstatement and that it gets executed
+	 * @throws SQLException
+	 */
     @Test
     void testAddCaver() throws SQLException {
     	//mock objects
@@ -50,20 +45,12 @@ class DaoFileTest {
         verify(ps).close();
         verify(mockConnection).close();
     }
-    
-    @Test
-    void testAddCaver_SQLException() throws SQLException {
-		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
-		Connection mockConnection = mock(Connection.class);
-		PreparedStatement ps = mock(PreparedStatement.class);
-		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
-        when(mockConnection.prepareStatement("INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)"))
-            .thenThrow(new SQLException());
-        
-        DaoFile dao = new DaoFile(mockConnectionManager);
-        assertThrows(SQLException.class, () -> dao.addCaver("John", "Active", "123-456-7890"));
-    }
 
+	/**
+	 * tests getting cavers from the db
+	 * asserts that the retrieved data is added to a list of cavers correctly
+	 * @throws SQLException
+	 */
     @Test
     void testGetCavers() throws SQLException {
 		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
@@ -79,18 +66,26 @@ class DaoFileTest {
         when(rs.getInt("caver_id")).thenReturn(1, 2);
         when(rs.getString("name")).thenReturn("John", "Jane");
         when(rs.getString("status")).thenReturn("Active", "Active");
-        when(rs.getString("phone")).thenReturn("123", "456");
+        when(rs.getString("phone")).thenReturn("123-457-7890", "123-457-7891");
         
         DaoFile dao = new DaoFile(mockConnectionManager);
         List<Caver> cavers = dao.getCavers();
         assertEquals(2, cavers.size());
         assertEquals("John", cavers.get(0).getName());
         assertEquals("Jane", cavers.get(1).getName());
+        assertEquals("Active", cavers.get(0).getStatus());
+        assertEquals("Active", cavers.get(1).getStatus());
+        assertEquals("123-457-7890", cavers.get(0).getPhone());
+        assertEquals("123-457-7891", cavers.get(1).getPhone());
         verify(ps).close();
         verify(rs).close();
         verify(mockConnection).close();
     }
-    
+	/**
+	 * tests update caver 
+	 * verifies if the parameters were added correctly to the preparedstatement and that it gets executed
+	 * @throws SQLException
+	 */
     @Test
     void testUpdateCaver() throws SQLException { 	
 		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
@@ -118,18 +113,11 @@ class DaoFileTest {
         
     }
     
-//    @Test
-//    void testUpdateCaver_SQLException() throws SQLException {
-//		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
-//		Connection mockConnection = mock(Connection.class);
-//		PreparedStatement ps = mock(PreparedStatement.class);
-//		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
-//        when(mockConnection.prepareStatement("UPDATE cavers SET name = ?, status = ?, phone = ? WHERE caver_id = ?"))
-//            .thenThrow(new SQLException());
-//        
-//        DaoFile dao = new DaoFile(mockConnectionManager);
-//        assertThrows(SQLException.class, () -> dao.updateCaver(1, "John1", "Active", "a123-456-7890"));
-//    }
+	/**
+	 * tests delete caver 
+	 * verifies if the parameters were added correctly to the preparedstatement and that it gets executed
+	 * @throws SQLException
+	 */
     @Test
     void testDeleteCaver() throws SQLException {
 		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
@@ -149,6 +137,11 @@ class DaoFileTest {
         verify(mockConnection).close();
     }
     
+	/**
+	 * tests adding a trip 
+	 * verifies if the parameters were added correctly to the preparedstatement and that it gets executed
+	 * @throws SQLException
+	 */
     @Test
     void testAddTrip() throws SQLException {
 		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
@@ -178,7 +171,11 @@ class DaoFileTest {
         verify(ps).close();
         verify(mockConnection).close();
     }
-    
+    /**
+	 * tests getting trips from the db
+	 * asserts that the retrieved data is added to a list of trips correctly
+	 * @throws SQLException
+	 */
     @Test
     void testGetTrips() throws SQLException {
     	ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
@@ -189,12 +186,11 @@ class DaoFileTest {
 		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
         when(mockConnection.prepareStatement("SELECT * FROM trips")).thenReturn(ps);
     	
-        //arrange
         when(ps.executeQuery()).thenReturn(rs);
         when(rs.next()).thenReturn(true, false);
         when(rs.getInt("trip_id")).thenReturn(1);
         when(rs.getInt("caver_id")).thenReturn(1);
-        when(rs.getString("cave_name")).thenReturn("Test Cave");
+        when(rs.getString("cave_name")).thenReturn("Othello tunnels");
         when(rs.getTimestamp("start_time")).thenReturn(new Timestamp(System.currentTimeMillis()));
         when(rs.getTimestamp("end_time")).thenReturn(new Timestamp(System.currentTimeMillis() + 3600000));
         when(rs.getInt("group_size")).thenReturn(5);
@@ -204,12 +200,18 @@ class DaoFileTest {
         
         List<Trip> trips = dao.getTrips();
         assertEquals(1, trips.size());
-        assertEquals("Test Cave", trips.get(0).getCave_name());
+        assertEquals("Othello tunnels", trips.get(0).getCave_name());
+
         verify(ps).close();
         verify(rs).close();
         verify(mockConnection).close();
     }
     
+	/**
+	 * tests updating a trip 
+	 * verifies if the parameters were added correctly to the preparedstatement and that it gets executed
+	 * @throws SQLException
+	 */
     @Test
     void testUpdateTrip() throws SQLException {
     	ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
@@ -239,7 +241,11 @@ class DaoFileTest {
         verify(ps).close();
     	
     }
-    
+	/**
+	 * tests deleting trip 
+	 * verifies if the parameters were added correctly to the preparedstatement and that it gets executed
+	 * @throws SQLException
+	 */
     @Test
     void testDeleteTrip() throws SQLException {
 		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
@@ -257,6 +263,24 @@ class DaoFileTest {
         verify(ps).executeUpdate();
         verify(ps).close();
         verify(mockConnection).close();
+    }
+    
+	/**
+	 * tests adding a caver to the db
+	 * asserts that an SQLException is thrown
+	 * @throws SQLException
+	 */
+    @Test
+    void testAddCaver_SQLException() throws SQLException {
+		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+		//throws an exception
+        when(mockConnection.prepareStatement("INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)"))
+            .thenThrow(new SQLException());
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+        assertThrows(SQLException.class, () -> dao.addCaver("John1", "Active1", "123-456-78"));
     }
     
 }

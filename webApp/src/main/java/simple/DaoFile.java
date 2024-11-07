@@ -100,8 +100,7 @@ public class DaoFile {
 	 * @param startTime to be put in the preparedstament
 	 * @param endTime to be put in the preparedstament 
 	 * @param groupSize to be put in the preparedstament 
-	 * @param maxTripLength to be put in the preparedstament  
-	 * @throws SQLexception if caver could not be added
+	 * @exception maxTripLength to be put in the preparedstament  
 	 */
 	void addTrip(int caverId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
 		String INSERT_TRIP = "INSERT INTO trips (caver_id, cave_name, start_time, end_time, group_size, max_trip_length) VALUES (?, ?, ?, ?, ?, ?)";
@@ -171,7 +170,7 @@ public class DaoFile {
 	 * @param name to be put in the preparedstament 
 	 * @param status to be put in the preparedstament 
 	 * @param phone to be put in the preparedstament 
-	 * @throws SQLexception if caver could not be added
+	 * @exception SQLexception if caver could not be updated
 	 */
 	void updateCaver(int caverId, String newName, String status, String phone) throws SQLException{
 		String UPDATE_CAVER = "UPDATE cavers SET name = ?, status = ?, phone = ? WHERE caver_id = ?";
@@ -196,7 +195,7 @@ public class DaoFile {
 	 * @param endTime to be put in the preparedstament 
 	 * @param groupSize to be put in the preparedstament 
 	 * @param maxTripLength to be put in the preparedstament  
-	 * @throws SQLexception if caver could not be added
+	 * @exception SQLexception if trip could not be updated
 	 */
 	void updateTrip(int tripId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
 		String UPDATE_TRIP = "UPDATE trips SET cave_name = ?, start_time = ?, end_time = ?, group_size = ?, max_trip_length = ? WHERE trip_id = ?";
@@ -219,6 +218,7 @@ public class DaoFile {
 	 * deletes a caver from the cavers table in the db
 	 *
 	 * @param caverId to be put in the preparedstament 
+	 * @exception SQLexception if caver could not be deleted
 	 */
 	void deleteCaver(int caverId) {
 		String DELETE_CAVER = "DELETE FROM cavers WHERE caver_id = ?";
@@ -235,6 +235,7 @@ public class DaoFile {
 	 * deletes a trip from the trips table in the db
 	 *
 	 * @param tripId to be put in the preparedstament 
+	 * @exception SQLexception if trip could not be deleted
 	 */
 	void deleteTrip(int tripId) {
 		String DELETE_TRIP = "DELETE FROM trips WHERE trip_id = ?";

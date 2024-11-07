@@ -21,7 +21,7 @@
         <input type="text"
                id="searchInput"
                class="search-input"
-               placeholder="Search by name, phone, or status..."
+               placeholder="Search by name, phone, or status"
                onkeyup="searchTable()">
     </div>
     <%
@@ -57,7 +57,7 @@
                         <input type="hidden" name="caver_id" value="<%= caver.getCaver_id() %>">
                         <input type="hidden" name="previous_name" value="<%= caver.getName() %>">
                         <input type="hidden" name="previous_phone" value="<%= caver.getPhone() %>">
-                        <input type="hidden" name="previous_Status" value="<%= caver.getStatus() %>">
+                        <input type="hidden" name="previous_status" value="<%= caver.getStatus() %>">
                         <button type="submit" class="update-btn">Update</button>
                     </form>
                     <form action="TripCrudServlet" method="post" style="display:inline;">

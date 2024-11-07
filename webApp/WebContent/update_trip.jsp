@@ -18,11 +18,11 @@
             </div>
             <div>
                 <label for="start_time">Start Time:</label>
-                <input type="text" id="start_time" name="start_time" class="input-field" value="<%=request.getParameter("saved_start_time") %>" pattern="^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$" required>
+                <input type="text" id="start_time" name="start_time" class="input-field" value="<%=request.getParameter("saved_start_time").substring(0,19) %>" pattern="^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$" required>
             </div>
             <div>
                 <label for="end_time">End Time:</label>
-                <input type="text" id="end_time" name="end_time" class="input-field" value="<%=request.getParameter("saved_end_time") %>" pattern="^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$" required>
+                <input type="text" id="end_time" name="end_time" class="input-field" value="<%=request.getParameter("saved_end_time").substring(0,19) %>" pattern="^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$" required>
             </div>
             <div>
                 <label for="group_size">Group Size:</label>

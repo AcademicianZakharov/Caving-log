@@ -93,7 +93,11 @@ public class TripCrudServlet extends HttpServlet {
 			Timestamp endTime = Timestamp.valueOf(request.getParameter("end_time"));
 			int groupSize = Integer.parseInt(request.getParameter("group_size"));
 			double maxTripLength = Double.parseDouble(request.getParameter("max_trip_length"));
-
+			if(startTime.after(endTime)) {
+				out.println("Error: Invalid time.");
+				Logger.info("invalid input");
+				return;
+			}
 
 			dao.updateTrip(tripId, caveName, startTime, endTime, groupSize, maxTripLength);
 			Logger.info("Trip with ID " + tripId + " updated.");
@@ -116,6 +120,12 @@ public class TripCrudServlet extends HttpServlet {
 			Timestamp endTime = Timestamp.valueOf(request.getParameter("end_time"));
 			int groupSize = Integer.parseInt(request.getParameter("group_size"));
 			double maxTripLength = Double.parseDouble(request.getParameter("max_trip_length"));
+			
+			if(startTime.after(endTime)) {
+				out.println("Error: Invalid time.");
+				Logger.info("invalid input");
+				return;
+			}
 
 
 			dao.addTrip(caverId, caveName, startTime, endTime, groupSize, maxTripLength);

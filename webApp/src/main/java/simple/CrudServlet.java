@@ -70,9 +70,9 @@ public class CrudServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
 		//regex
-		String nameRegex = "^[A-Za-z\\s]{1,100}$";
-		String statusRegex = "^[A-Za-z\\s]{1,100}$";
-		String phoneRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}";
+		String nameRegex = "^[A-Za-z\\s]{1,100}$";//
+		String statusRegex = "^[A-Za-z\\s]{1,100}$";//
+		String phoneRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}$";//
 
 		String action = request.getParameter("action");
 		DaoFile dao = this.dao;
