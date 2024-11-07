@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <title>View Trips</title>
-    <link rel="stylesheet" type="text/css" href="read_style.css">
+    <link rel="stylesheet" type="text/css" href="read_style.css">    
 </head>
 <body>
 
@@ -62,6 +62,11 @@
                     <form action="update_trip.jsp" method="get" style="display:inline;">
                         <input type="hidden" name="trip_id" value="<%= trip.getTrip_id() %>">
                         <input type="hidden" name="caver_id" value="<%= caverId %>">
+                        <input type="hidden" name="saved_cave_name" value="<%= trip.getCave_name() %>">
+                        <input type="hidden" name="saved_start_time" value="<%= trip.getStart_time() %>">
+                        <input type="hidden" name="saved_end_time" value="<%= trip.getEnd_time() %>">
+                        <input type="hidden" name="saved_group_size" value="<%= trip.getGroup_size() %>">
+                        <input type="hidden" name="saved_max_trip_length" value="<%= trip.getMax_trip_length() %>">
                         <button type="submit" class="update-btn">Update</button>
                     </form>      
                 </td>
@@ -88,7 +93,6 @@
         }
     %>
 
-
-</div>      
+</div>
 </body>
 </html>

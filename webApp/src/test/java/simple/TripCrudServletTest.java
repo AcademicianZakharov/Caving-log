@@ -83,8 +83,8 @@ class TripCrudServletTest {
         when(request.getParameter("action")).thenReturn("insert");
         when(request.getParameter("caver_id")).thenReturn("1");
         when(request.getParameter("cave_name")).thenReturn("Othello tunnels1");
-        when(request.getParameter("start_time")).thenReturn("2024-10-29 12:00:00");
-        when(request.getParameter("end_time")).thenReturn("2024-10-30 ");
+        when(request.getParameter("start_time")).thenReturn("2024-10-29 12:00:00a");
+        when(request.getParameter("end_time")).thenReturn("2024-10-30 12:00:00b");
         when(request.getParameter("group_size")).thenReturn("4");
         when(request.getParameter("max_trip_length")).thenReturn("24");
         when(response.getWriter()).thenReturn(writer);
@@ -92,7 +92,7 @@ class TripCrudServletTest {
         // Execute
         servlet.doPost(request, response);
         // Verify
-        assertEquals("Error: All fields are required and must be in the correct format.",
+        assertEquals("Error: Invalid input format.",
             stringWriter.toString().trim());
     }
     @Test
@@ -113,15 +113,20 @@ class TripCrudServletTest {
         // Setup
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
-        when(request.getParameter("action")).thenReturn("insert");
+        RequestDispatcher dispatcher = mock(RequestDispatcher.class);
+        HttpSession session = mock(HttpSession.class);
+        when(request.getSession()).thenReturn(session);
+        when(request.getRequestDispatcher(anyString())).thenReturn(dispatcher);
+        
+        when(request.getParameter("action")).thenReturn("update");
         when(request.getParameter("trip_id")).thenReturn("1");
+        when(request.getParameter("caver_id")).thenReturn("1");
         when(request.getParameter("cave_name")).thenReturn("Othello tunnels");
         when(request.getParameter("start_time")).thenReturn("2024-10-29 12:00:00");
         when(request.getParameter("end_time")).thenReturn("2024-10-30 12:00:00");
         when(request.getParameter("group_size")).thenReturn("4");
         when(request.getParameter("max_trip_length")).thenReturn("24");
 
-		//DaoFile dao = new DaoFile(mockConnectionManager);
         TripCrudServlet servlet = new TripCrudServlet(mockDao);
         // Execute
         servlet.doPost(request, response);
@@ -135,12 +140,13 @@ class TripCrudServletTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
         StringWriter stringWriter = new StringWriter();
         PrintWriter writer = new PrintWriter(stringWriter);
-        when(request.getParameter("action")).thenReturn("insert");
-        when(request.getParameter("trip_id")).thenReturn("1");
-        when(request.getParameter("caver_id")).thenReturn("1");
-        when(request.getParameter("cave_name")).thenReturn("Othello tunnels");
-        when(request.getParameter("start_time")).thenReturn("2024-10-29 12:00:00");
-        when(request.getParameter("end_time")).thenReturn("2024-10-30 12:00:00");
+        //testing bad input cave_name with a number
+        when(request.getParameter("action")).thenReturn("update");
+        when(request.getParameter("trip_id")).thenReturn("1%");
+        when(request.getParameter("caver_id")).thenReturn("1#");
+        when(request.getParameter("cave_name")).thenReturn("Othello tunnels1");
+        when(request.getParameter("start_time")).thenReturn("2024-10-29 12:00:00a");
+        when(request.getParameter("end_time")).thenReturn("2024-10-29 16:00:00b");
         when(request.getParameter("group_size")).thenReturn("4");
         when(request.getParameter("max_trip_length")).thenReturn("24");
         when(response.getWriter()).thenReturn(writer);
@@ -149,7 +155,7 @@ class TripCrudServletTest {
         // Execute
         servlet.doPost(request, response);
         // Verify
-        assertEquals("Error: All fields are required and must be in the correct format.",
+        assertEquals("Error: Invalid input format.",
             stringWriter.toString().trim());
     }
 }

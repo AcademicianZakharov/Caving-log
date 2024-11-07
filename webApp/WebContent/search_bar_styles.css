@@ -1,0 +1,20 @@
+ .search-input {
+        padding: 8px;
+        width: 300px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    .search-input:focus {
+        outline: none;
+        border-color: rgb(98, 160, 234);
+        box-shadow: 0 0 5px rgb(119, 118, 123);
+    }
+    .no-results {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+    }
+    tr.hidden {
+        display: none;
+    }

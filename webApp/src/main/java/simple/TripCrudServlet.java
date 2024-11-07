@@ -76,6 +76,16 @@ public class TripCrudServlet extends HttpServlet {
 			Logger.info("Trip with ID " + tripId + " deleted.");
 			response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
 		} else if ("update".equals(action)) {
+			// Validate input
+			if (!isValid(request.getParameter("cave_name"), caveNameRegex) ||
+					!isValid(request.getParameter("start_time"), timestampRegex) ||
+					!isValid(request.getParameter("end_time"), timestampRegex) ||
+					!isValid(request.getParameter("group_size"), groupSizeRegex) ||
+					!isValid(request.getParameter("max_trip_length"), maxTripLengthRegex)) {
+				out.println("Error: Invalid input format.");
+				Logger.info("invalid input");
+				return;
+			}
 			//update trip
 			int tripId = Integer.parseInt(request.getParameter("trip_id"));
 			String caveName = request.getParameter("cave_name");
@@ -84,8 +94,13 @@ public class TripCrudServlet extends HttpServlet {
 			int groupSize = Integer.parseInt(request.getParameter("group_size"));
 			double maxTripLength = Double.parseDouble(request.getParameter("max_trip_length"));
 
+
+			dao.updateTrip(tripId, caveName, startTime, endTime, groupSize, maxTripLength);
+			Logger.info("Trip with ID " + tripId + " updated.");
+			response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
+		} else if ("insert".equals(action)) {
 			// Validate input
-			if (!isValid(caveName, caveNameRegex) ||
+			if (!isValid(request.getParameter("cave_name"), caveNameRegex) ||
 					!isValid(request.getParameter("start_time"), timestampRegex) ||
 					!isValid(request.getParameter("end_time"), timestampRegex) ||
 					!isValid(request.getParameter("group_size"), groupSizeRegex) ||
@@ -94,10 +109,6 @@ public class TripCrudServlet extends HttpServlet {
 				Logger.info("invalid input");
 				return;
 			}
-			dao.updateTrip(tripId, caveName, startTime, endTime, groupSize, maxTripLength);
-			Logger.info("Trip with ID " + tripId + " updated.");
-			response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
-		} else if ("insert".equals(action)) {
 			//add trip
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
 			String caveName = request.getParameter("cave_name");
@@ -106,16 +117,7 @@ public class TripCrudServlet extends HttpServlet {
 			int groupSize = Integer.parseInt(request.getParameter("group_size"));
 			double maxTripLength = Double.parseDouble(request.getParameter("max_trip_length"));
 
-			// Validate input
-			if (!isValid(caveName, caveNameRegex) ||
-					!isValid(request.getParameter("start_time"), timestampRegex) ||
-					!isValid(request.getParameter("end_time"), timestampRegex) ||
-					!isValid(request.getParameter("group_size"), groupSizeRegex) ||
-					!isValid(request.getParameter("max_trip_length"), maxTripLengthRegex)) {
-				out.println("Error: Invalid input format.");
-				Logger.info("invalid input");
-				return;
-			}
+
 			dao.addTrip(caverId, caveName, startTime, endTime, groupSize, maxTripLength);
 			Logger.info("New trip added: Cave = " + caveName);
 			response.sendRedirect(request.getContextPath() + "/TripCrudServlet");

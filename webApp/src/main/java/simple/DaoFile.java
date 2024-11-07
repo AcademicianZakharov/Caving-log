@@ -23,7 +23,7 @@ public class DaoFile {
 	/**
 	 * default constructor
 	 */
-	public DaoFile() {
+	DaoFile() {
 		try {
 			connectionManager = new TomcatConnectionManager("java:/comp/env", "jdbc/dbcp");
 			Logger.info("Created new ConnectionManager");
@@ -36,14 +36,14 @@ public class DaoFile {
 	/**
 	 * constructor with existing connectionManager
 	 */
-	public DaoFile(ConnectionManager connectionManager) {
+	DaoFile(ConnectionManager connectionManager) {
 		this.connectionManager = connectionManager;
 		Logger.info("existing connectionManager");
 	}
 	/**
 	 * attempts to get a connection with connectionManager
 	 */
-	public void testConnection() {
+	void testConnection() {
 		if(connectionManager != null) {
 			Connection connection = null;
 			try {
@@ -69,7 +69,7 @@ public class DaoFile {
 	 * @param phone to be put in the preparedstament 
 	 * @throws SQLexception if caver could not be added
 	 */
-	public void addCaver(String name, String status, String phone) throws SQLException{
+	void addCaver(String name, String status, String phone) throws SQLException{
 		String INSERT_CAVER = "INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)";
 		Connection connection = null;
 		PreparedStatement ps = null;
@@ -103,7 +103,7 @@ public class DaoFile {
 	 * @param maxTripLength to be put in the preparedstament  
 	 * @throws SQLexception if caver could not be added
 	 */
-	public void addTrip(int caverId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
+	void addTrip(int caverId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
 		String INSERT_TRIP = "INSERT INTO trips (caver_id, cave_name, start_time, end_time, group_size, max_trip_length) VALUES (?, ?, ?, ?, ?, ?)";
 		try (Connection connection = connectionManager.getConnection();
 				PreparedStatement ps = connection.prepareStatement(INSERT_TRIP)) {
@@ -124,7 +124,7 @@ public class DaoFile {
 	 * reads cavers from cavers table in the db
 	 * @return List<Caver> 
 	 */
-	public List<Caver> getCavers() {
+	List<Caver> getCavers() {
 		String SELECT_CAVERS = "SELECT * FROM cavers";
 		List<Caver> cavers = new ArrayList<>();
 		try (Connection connection = connectionManager.getConnection();
@@ -146,7 +146,7 @@ public class DaoFile {
 	 * reads trips from the trips table in the db
 	 * @return List<Trip> 
 	 */
-	public List<Trip> getTrips() {
+	List<Trip> getTrips() {
 		String SELECT_TRIPS = "SELECT * FROM trips";
 		List<Trip> trips = new ArrayList<>();
 		try (Connection connection = connectionManager.getConnection();
@@ -173,7 +173,7 @@ public class DaoFile {
 	 * @param phone to be put in the preparedstament 
 	 * @throws SQLexception if caver could not be added
 	 */
-	public void updateCaver(int caverId, String newName, String status, String phone) throws SQLException{
+	void updateCaver(int caverId, String newName, String status, String phone) throws SQLException{
 		String UPDATE_CAVER = "UPDATE cavers SET name = ?, status = ?, phone = ? WHERE caver_id = ?";
 		try (Connection connection = connectionManager.getConnection();
 				PreparedStatement ps = connection.prepareStatement(UPDATE_CAVER)) {
@@ -198,7 +198,7 @@ public class DaoFile {
 	 * @param maxTripLength to be put in the preparedstament  
 	 * @throws SQLexception if caver could not be added
 	 */
-	public void updateTrip(int tripId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
+	void updateTrip(int tripId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
 		String UPDATE_TRIP = "UPDATE trips SET cave_name = ?, start_time = ?, end_time = ?, group_size = ?, max_trip_length = ? WHERE trip_id = ?";
 		try (Connection connection = connectionManager.getConnection();
 				PreparedStatement ps = connection.prepareStatement(UPDATE_TRIP)) {
@@ -220,7 +220,7 @@ public class DaoFile {
 	 *
 	 * @param caverId to be put in the preparedstament 
 	 */
-	public void deleteCaver(int caverId) {
+	void deleteCaver(int caverId) {
 		String DELETE_CAVER = "DELETE FROM cavers WHERE caver_id = ?";
 		try (Connection connection = connectionManager.getConnection();
 				PreparedStatement ps = connection.prepareStatement(DELETE_CAVER)) {
@@ -236,7 +236,7 @@ public class DaoFile {
 	 *
 	 * @param tripId to be put in the preparedstament 
 	 */
-	public void deleteTrip(int tripId) {
+	void deleteTrip(int tripId) {
 		String DELETE_TRIP = "DELETE FROM trips WHERE trip_id = ?";
 		try (Connection connection = connectionManager.getConnection();
 				PreparedStatement ps = connection.prepareStatement(DELETE_TRIP)) {

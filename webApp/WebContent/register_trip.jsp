@@ -27,11 +27,11 @@
 			</div>
 			<div>
 				<label for="group_size">Group Size:</label> 
-				<input type="tel" id="group_size" name="group_size" class="input-field" placeholder="only non negative integers" pattern="^\d+$" required>
+				<input type="tel" id="group_size" name="group_size" class="input-field" placeholder="only non negative integers accepted" pattern="^\d+$" required>
 			</div>
 			<div>
 				<label for="max_trip_length">Max Trip Length:</label> 
-				<input type="tel" id="max_trip_length" name="max_trip_length" class="input-field" placeholder="only non negative decimals" pattern="^\d*[\.]?[\d]*$" required>
+				<input type="tel" id="max_trip_length" name="max_trip_length" class="input-field" placeholder="In hours, only non negative decimals accepted" pattern="^\d*[\.]?[\d]*$" required>
 			</div>
 			<input type="hidden" name="caver_id" id="caver_id" value="<%= request.getParameter("caver_id")%>">
 			<input type="hidden" name="action" value="insert">
