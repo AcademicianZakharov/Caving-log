@@ -22,6 +22,7 @@
 <%
         List<Trip> trips = (List<Trip>) session.getAttribute("trips");
         if (trips != null && !trips.isEmpty()) {
+        int caverId = (Integer)(session.getAttribute("caver_id"));
     %>
     <table>
         <thead>
@@ -38,7 +39,7 @@
         </thead>
         <tbody>
             <%
-				int caverId = (Integer)(session.getAttribute("caver_id"));
+				
 
                 for (Trip trip : trips) {
                 	if(trip.getCaver_id() == caverId){
@@ -89,6 +90,13 @@
         } else {
     %>
     <p>No Trips found.</p>
+        <form action="register_trip.jsp" method="post" style="display:inline;">
+        <input type="hidden" name="caver_id" value="<%= (Integer)(session.getAttribute("caver_id")) %>">
+    	<button type="submit" class="insert-btn">Add trip</button>
+    </form>
+    <form action="CrudServlet" method="get" >
+    	<button type="submit" class="insert-btn">Back to Cavers</button>
+    </form>
     <%
         }
     %>

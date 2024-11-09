@@ -78,6 +78,9 @@
     } else {
     %>
     <p>No cavers found.</p>
+        <form action="registration.jsp" method="get" style="display:inline;">
+        <button type="submit" class="insert-btn">Add Caver</button>
+    </form>
     <%
     }
     %>

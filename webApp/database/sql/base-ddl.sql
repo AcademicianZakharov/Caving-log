@@ -15,12 +15,14 @@ CREATE TABLE cavers(
 -- Insert into cavers without specifying caver_id (it will auto-increment)
 INSERT INTO cavers (name, status, phone)
 VALUES
-  ('John', 'not caving', '250-742-6412'),
-  ('Jane', 'not caving', '604-854-4562'),
-  ('Alice', 'not caving', '778-742-4532'),
-  ('Bob', 'not caving', '250-345-4652'),
-  ('Emily', 'not caving', '250-542-5431'),
-  ('jack', 'not caving', '250-769-2753');
+  ('Gandalf', 'Entering mine', '250-742-6412'),
+  ('Aragorn', 'Entering mine', '604-854-4562'),
+  ('Legolas', 'Entering mine', '778-742-4532'),
+  ('Gimli', 'Entering mine', '250-345-4652'),
+  ('Boromir', 'Entering mine', '250-542-5431'),
+  ('Merry', 'Entering mine', '250-769-2753'),
+  ('Pippin', 'Entering mine', '250-542-5431'),
+  ('Sam', 'Entering mine', '250-769-2753');
 -- Create the trips table with auto-incrementing trip_id
 CREATE TABLE trips(
   trip_id SERIAL PRIMARY KEY,   -- SERIAL will auto-increment the trip_id
