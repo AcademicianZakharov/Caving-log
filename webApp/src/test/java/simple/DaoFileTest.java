@@ -276,11 +276,24 @@ class DaoFileTest {
 		Connection mockConnection = mock(Connection.class);
 		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
 		//throws an exception
-        when(mockConnection.prepareStatement("INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)"))
-            .thenThrow(new SQLException());
+        when(mockConnection.prepareStatement("INSERT INTO cavers (name, status, phone) VALUES (?, ?, ?)")).thenThrow(new SQLException());
         
         DaoFile dao = new DaoFile(mockConnectionManager);
         assertThrows(SQLException.class, () -> dao.addCaver("John1", "Active1", "123-456-78"));
+    }
+    
+    @Test
+    void testAddTrip_SQLException() throws SQLException {
+		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+		//throws an exception
+        when(mockConnection.prepareStatement("INSERT INTO trips (caver_id, cave_name, start_time, end_time, group_size, max_trip_length) VALUES (?, ?, ?, ?, ?, ?)")).thenThrow(new SQLException());
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+        Timestamp startTime = new Timestamp(System.currentTimeMillis());
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + 3600000);
+        assertThrows(SQLException.class, () -> dao.addTrip(1, "othello tunnels1", startTime, endTime, 4, 12.0));
     }
     
 }

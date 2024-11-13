@@ -49,7 +49,13 @@ public class CrudServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		dao.testConnection();
-		List<Caver> cavers = dao.getCavers(); 
+		List<Caver> cavers = null;
+		try {
+			cavers = dao.getCavers();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		//store the list of cavers in the session
 		HttpSession session = request.getSession();
 		session.setAttribute("cavers", cavers);
@@ -81,7 +87,12 @@ public class CrudServlet extends HttpServlet {
 		if ("delete".equals(action)) {
 			//delete caver
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
-			dao.deleteCaver(caverId);
+			try {
+				dao.deleteCaver(caverId);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Logger.info("Caver with ID " + caverId + " deleted.");
 			response.sendRedirect(request.getContextPath() + "/CrudServlet");
 			action = null;
@@ -125,7 +136,13 @@ public class CrudServlet extends HttpServlet {
 			}
 			Logger.info("New caver added: " + name);
 			//show the caver in a jsp page
-			List<Caver> cavers = dao.getCavers(); 
+			List<Caver> cavers = null;
+			try {
+				cavers = dao.getCavers();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 			//store the list of cavers in the session
 			HttpSession session = request.getSession();
 			session.setAttribute("cavers", cavers);
@@ -136,7 +153,13 @@ public class CrudServlet extends HttpServlet {
 		}
 		else {		
 			//Read cavers from db
-			List<Caver> cavers = dao.getCavers(); 
+			List<Caver> cavers = null;
+			try {
+				cavers = dao.getCavers();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 			//store the list of cavers in the session
 			HttpSession session = request.getSession();
 			session.setAttribute("cavers", cavers);

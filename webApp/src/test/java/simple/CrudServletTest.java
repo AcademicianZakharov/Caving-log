@@ -26,8 +26,9 @@ class CrudServletTest {
 	
 	/**
 	 * mock objects and initial data
+	 * @throws SQLException 
 	 */
-	@BeforeEach void setUp() {
+	@BeforeEach void setUp() throws SQLException {
 		mockDao = mock(DaoFile.class); 
 		mockCavers = new ArrayList<>();
 		mockCavers.add(new Caver(1, "John", "Active", "123-456-7890"));

@@ -26,8 +26,9 @@ class TripCrudServletTest {
 	private List<Trip> mockTrips;
 	/**
 	 * mock objects and initial data
+	 * @throws SQLException 
 	 */
-	@BeforeEach void setUp() {
+	@BeforeEach void setUp() throws SQLException {
 		mockDao = mock(DaoFile.class); 
 		mockTrips = new ArrayList<>();
         Timestamp startTime = new Timestamp(System.currentTimeMillis());

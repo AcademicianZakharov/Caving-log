@@ -1,6 +1,7 @@
 package simple;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -43,7 +44,13 @@ public class TripCrudServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		dao.testConnection();
-		List<Trip> trips = dao.getTrips();
+		List<Trip> trips = null;
+		try {
+			trips = dao.getTrips();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		HttpSession session = request.getSession();
 		session.setAttribute("trips", trips);
 		RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
@@ -72,7 +79,12 @@ public class TripCrudServlet extends HttpServlet {
 		if ("delete".equals(action)) {
 			//delete trip
 			int tripId = Integer.parseInt(request.getParameter("trip_id"));
-			dao.deleteTrip(tripId);
+			try {
+				dao.deleteTrip(tripId);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Logger.info("Trip with ID " + tripId + " deleted.");
 			response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
 		} else if ("update".equals(action)) {
@@ -99,7 +111,12 @@ public class TripCrudServlet extends HttpServlet {
 				return;
 			}
 
-			dao.updateTrip(tripId, caveName, startTime, endTime, groupSize, maxTripLength);
+			try {
+				dao.updateTrip(tripId, caveName, startTime, endTime, groupSize, maxTripLength);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Logger.info("Trip with ID " + tripId + " updated.");
 			response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
 		} else if ("insert".equals(action)) {
@@ -128,12 +145,23 @@ public class TripCrudServlet extends HttpServlet {
 			}
 
 
-			dao.addTrip(caverId, caveName, startTime, endTime, groupSize, maxTripLength);
+			try {
+				dao.addTrip(caverId, caveName, startTime, endTime, groupSize, maxTripLength);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			Logger.info("New trip added: Cave = " + caveName);
 			response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
 		} else {
 			//Read from db
-			List<Trip> trips = dao.getTrips();
+			List<Trip> trips = null;
+			try {
+				trips = dao.getTrips();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			HttpSession session = request.getSession();
 			session.setAttribute("trips", trips);
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
