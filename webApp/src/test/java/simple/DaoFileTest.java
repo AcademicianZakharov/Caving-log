@@ -282,6 +282,11 @@ class DaoFileTest {
         assertThrows(SQLException.class, () -> dao.addCaver("John1", "Active1", "123-456-78"));
     }
     
+	/**
+	 * tests adding a trip to the db
+	 * asserts that an SQLException is thrown
+	 * @throws SQLException
+	 */
     @Test
     void testAddTrip_SQLException() throws SQLException {
 		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
@@ -295,5 +300,105 @@ class DaoFileTest {
         Timestamp endTime = new Timestamp(System.currentTimeMillis() + 3600000);
         assertThrows(SQLException.class, () -> dao.addTrip(1, "othello tunnels1", startTime, endTime, 4, 12.0));
     }
+	/**
+	 * tests update caver
+	 * asserts that an SQLException is thrown
+	 * @throws SQLException
+	 */
+    @Test
+    void testUpdateCaver_SQLException() throws SQLException {
+		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+		//throws an exception
+        when(mockConnection.prepareStatement("UPDATE cavers SET name = ?, status = ?, phone = ? WHERE caver_id = ?")).thenThrow(new SQLException());
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+        assertThrows(SQLException.class, () -> dao.updateCaver(1, "John1", "Active1", "123-456-78"));
+    }
+	/**
+	 * tests updating a trip 
+	 * asserts that an SQLException is thrown
+	 * @throws SQLException
+	 */
+    @Test
+    void testUpdateTrip_SQLException() throws SQLException {
+		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+		//throws an exception
+        when(mockConnection.prepareStatement("UPDATE trips SET cave_name = ?, start_time = ?, end_time = ?, group_size = ?, max_trip_length = ? WHERE trip_id = ?")).thenThrow(new SQLException());
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+        Timestamp startTime = new Timestamp(System.currentTimeMillis());
+        Timestamp endTime = new Timestamp(System.currentTimeMillis() + 3600000);
+        assertThrows(SQLException.class, () -> dao.updateTrip(1, "othello tunnels1", startTime, endTime, 4, 12.0));
+    }
+	/**
+	 * tests deleting a caver
+	 * asserts that an SQLException is thrown
+	 * @throws SQLException
+	 */
+    @Test
+    void testDeleteCaver_SQLException() throws SQLException {
+		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+		//throws an exception
+        when(mockConnection.prepareStatement("DELETE FROM cavers WHERE caver_id = ?")).thenThrow(new SQLException());
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+        assertThrows(SQLException.class, () -> dao.deleteCaver(1));
+    }
+	/**
+	 * tests deleting a trip
+	 * asserts that an SQLException is thrown
+	 * @throws SQLException
+	 */
+    @Test
+    void testDeleteTrip_SQLException() throws SQLException {
+		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+		//throws an exception
+        when(mockConnection.prepareStatement("DELETE FROM trips WHERE trip_id = ?")).thenThrow(new SQLException());
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+        assertThrows(SQLException.class, () -> dao.deleteTrip(1));
+    }
+	/**
+	 * tests getting cavers from db
+	 * asserts that an SQLException is thrown
+	 * @throws SQLException
+	 */
+    @Test
+    void testGetCavers_SQLException() throws SQLException {
+		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+		//throws an exception
+        when(mockConnection.prepareStatement("SELECT * FROM cavers")).thenThrow(new SQLException());
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+        assertThrows(SQLException.class, () -> dao.getCavers());
+    }
+	/**
+	 * tests getting trips from db
+	 * asserts that an SQLException is thrown
+	 * @throws SQLException
+	 */
+    @Test
+    void testGetTrips_SQLException() throws SQLException {
+		ConnectionManager mockConnectionManager = mock(ConnectionManager.class);
+		Connection mockConnection = mock(Connection.class);
+		when(mockConnectionManager.getConnection()).thenReturn(mockConnection);
+		//throws an exception
+        when(mockConnection.prepareStatement("SELECT * FROM trips")).thenThrow(new SQLException());
+        
+        DaoFile dao = new DaoFile(mockConnectionManager);
+        assertThrows(SQLException.class, () -> dao.getTrips());
+    }
+
+    
     
 }

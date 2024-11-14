@@ -43,8 +43,7 @@ public class DaoFile {
 	/**
 	 * attempts to get a connection with connectionManager
 	 */
-	void testConnection() {
-		if(connectionManager != null) {
+	void testConnection() throws SQLException{
 			Connection connection = null;
 			try {
 				connection = connectionManager.getConnection();
@@ -54,11 +53,16 @@ public class DaoFile {
 				connection.close();
 			} catch (SQLException e) {
 				Logger.info("db connection error");
-			} 
-		}
-		else {
-			Logger.error("Connection manager is null");
-		}
+				throw e;
+			}
+			finally {
+				try {
+					if (connection != null) connection.close();
+				} catch (SQLException e){
+				}
+			}
+			
+		
 	}
 
 	/**
@@ -91,7 +95,7 @@ public class DaoFile {
 			}
 		}
 	}
-	
+
 	/**
 	 * adds a trip to trips table in the db
 	 *
@@ -102,23 +106,6 @@ public class DaoFile {
 	 * @param groupSize to be put in the preparedstament 
 	 * @exception maxTripLength to be put in the preparedstament  
 	 */
-//	void addTrip(int caverId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
-//		String INSERT_TRIP = "INSERT INTO trips (caver_id, cave_name, start_time, end_time, group_size, max_trip_length) VALUES (?, ?, ?, ?, ?, ?)";
-//		try (Connection connection = connectionManager.getConnection();
-//				PreparedStatement ps = connection.prepareStatement(INSERT_TRIP)) {
-//			ps.setInt(1, caverId);
-//			ps.setString(2, caveName);
-//			ps.setTimestamp(3, startTime);
-//			ps.setTimestamp(4, endTime);
-//			ps.setInt(5, groupSize);
-//			ps.setDouble(6, maxTripLength);
-//			ps.executeUpdate();
-//			Logger.info("Trip added successfully");
-//		} catch (SQLException e) {
-//			Logger.error("Error adding trip", e);
-//		} 
-//	}
-	
 	void addTrip(int caverId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) throws SQLException {
 		String INSERT_TRIP = "INSERT INTO trips (caver_id, cave_name, start_time, end_time, group_size, max_trip_length) VALUES (?, ?, ?, ?, ?, ?)";
 		Connection connection = null;
@@ -135,7 +122,7 @@ public class DaoFile {
 			ps.executeUpdate();
 			Logger.info("Trip added successfully");
 		} catch (SQLException e) {
-			Logger.error("Error adding caver", e);
+			Logger.error("Error adding trip", e);
 			throw e;
 		} finally {
 			try {
@@ -145,30 +132,12 @@ public class DaoFile {
 			}
 		}
 	}
-	
-	
+
 
 	/**
 	 * reads cavers from cavers table in the db
 	 * @return List<Caver> 
 	 */
-//	List<Caver> getCavers() {
-//		String SELECT_CAVERS = "SELECT * FROM cavers";
-//		List<Caver> cavers = new ArrayList<>();
-//		try (Connection connection = connectionManager.getConnection();
-//				PreparedStatement ps = connection.prepareStatement(SELECT_CAVERS);
-//				ResultSet rs = ps.executeQuery()) {
-//			while (rs.next()) {
-//				Caver caver = new Caver(rs.getInt("caver_id"), rs.getString("name"),
-//						rs.getString("status"), rs.getString("phone"));
-//				cavers.add(caver);
-//			}
-//			
-//		} catch (SQLException e) {
-//			Logger.error("Error reading cavers", e);
-//		}
-//		return cavers;
-//	}
 	List<Caver> getCavers() throws SQLException{
 		String SELECT_CAVERS = "SELECT * FROM cavers";
 		List<Caver> cavers = new ArrayList<>();
@@ -185,7 +154,7 @@ public class DaoFile {
 				cavers.add(caver);
 			}	
 		} catch (SQLException e) {
-			Logger.error("Error adding caver", e);
+			Logger.error("Error getting cavers", e);
 			throw e;
 		} finally {
 			try {
@@ -205,14 +174,14 @@ public class DaoFile {
 	List<Trip> getTrips()  throws SQLException{
 		String SELECT_TRIPS = "SELECT * FROM trips";
 		List<Trip> trips = new ArrayList<>();
-		
+
 		Connection connection = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			 connection = connectionManager.getConnection();
-				 ps = connection.prepareStatement(SELECT_TRIPS);
-				 rs = ps.executeQuery(); 
+			connection = connectionManager.getConnection();
+			ps = connection.prepareStatement(SELECT_TRIPS);
+			rs = ps.executeQuery(); 
 			while (rs.next()) {
 				Trip trip = new Trip(rs.getInt("trip_id"), rs.getInt("caver_id"), rs.getString("cave_name"),
 						rs.getTimestamp("start_time"), rs.getTimestamp("end_time"),
@@ -220,7 +189,7 @@ public class DaoFile {
 				trips.add(trip);
 			}
 		} catch (SQLException e) {
-			Logger.error("Error adding caver", e);
+			Logger.error("Error getting trips", e);
 			throw e;
 		} finally {
 			try {
@@ -241,19 +210,6 @@ public class DaoFile {
 	 * @param phone to be put in the preparedstament 
 	 * @exception SQLexception if caver could not be updated
 	 */
-//	void updateCaver(int caverId, String newName, String status, String phone) throws SQLException{
-//		String UPDATE_CAVER = "UPDATE cavers SET name = ?, status = ?, phone = ? WHERE caver_id = ?";
-//		try (Connection connection = connectionManager.getConnection();
-//				PreparedStatement ps = connection.prepareStatement(UPDATE_CAVER)) {
-//			ps.setString(1, newName);
-//			ps.setString(2, status);
-//			ps.setString(3, phone);
-//			ps.setInt(4, caverId);
-//			ps.executeUpdate();
-//		} catch (SQLException e) {
-//			Logger.error("Error updating caver", e);
-//		}
-//	}
 	void updateCaver(int caverId, String newName, String status, String phone) throws SQLException{
 		String UPDATE_CAVER = "UPDATE cavers SET name = ?, status = ?, phone = ? WHERE caver_id = ?";
 		Connection connection = null;
@@ -267,7 +223,7 @@ public class DaoFile {
 			ps.setInt(4, caverId);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			Logger.error("Error adding caver", e);
+			Logger.error("Error updating caver", e);
 			throw e;
 		} finally {
 			try {
@@ -289,22 +245,6 @@ public class DaoFile {
 	 * @param maxTripLength to be put in the preparedstament  
 	 * @exception SQLexception if trip could not be updated
 	 */
-//	void updateTrip(int tripId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) {
-//		String UPDATE_TRIP = "UPDATE trips SET cave_name = ?, start_time = ?, end_time = ?, group_size = ?, max_trip_length = ? WHERE trip_id = ?";
-//		try (Connection connection = connectionManager.getConnection();
-//				PreparedStatement ps = connection.prepareStatement(UPDATE_TRIP)) {
-//			ps.setString(1, caveName);
-//			ps.setTimestamp(2, startTime);
-//			ps.setTimestamp(3, endTime);
-//			ps.setInt(4, groupSize);
-//			ps.setDouble(5, maxTripLength);
-//			ps.setInt(6, tripId);
-//			ps.executeUpdate();
-//			Logger.info("Trip with ID " + tripId + " updated successfully");
-//		} catch (SQLException e) {
-//			Logger.error("Error updating trip", e);
-//		}
-//	}
 	void updateTrip(int tripId, String caveName, Timestamp startTime, Timestamp endTime, int groupSize, double maxTripLength) throws SQLException{
 		String UPDATE_TRIP = "UPDATE trips SET cave_name = ?, start_time = ?, end_time = ?, group_size = ?, max_trip_length = ? WHERE trip_id = ?";
 		Connection connection = null;
@@ -321,7 +261,7 @@ public class DaoFile {
 			ps.executeUpdate();
 			Logger.info("Trip with ID " + tripId + " updated successfully");
 		} catch (SQLException e) {
-			Logger.error("Error adding caver", e);
+			Logger.error("Error updating trip", e);
 			throw e;
 		} finally {
 			try {
@@ -338,16 +278,6 @@ public class DaoFile {
 	 * @param caverId to be put in the preparedstament 
 	 * @exception SQLexception if caver could not be deleted
 	 */
-//	void deleteCaver(int caverId) {
-//		String DELETE_CAVER = "DELETE FROM cavers WHERE caver_id = ?";
-//		try (Connection connection = connectionManager.getConnection();
-//				PreparedStatement ps = connection.prepareStatement(DELETE_CAVER)) {
-//			ps.setInt(1, caverId);
-//			ps.executeUpdate();
-//		} catch (SQLException e) {
-//			Logger.error("Error deleting caver", e);
-//		}
-//	}
 	void deleteCaver(int caverId) throws SQLException{
 		String DELETE_CAVER = "DELETE FROM cavers WHERE caver_id = ?";
 		Connection connection = null;
@@ -358,7 +288,7 @@ public class DaoFile {
 			ps.setInt(1, caverId);
 			ps.executeUpdate();
 		} catch (SQLException e) {
-			Logger.error("Error adding caver", e);
+			Logger.error("Error deleting caver", e);
 			throw e;
 		} finally {
 			try {
@@ -376,17 +306,6 @@ public class DaoFile {
 	 * @param tripId to be put in the preparedstament 
 	 * @exception SQLexception if trip could not be deleted
 	 */
-//	void deleteTrip(int tripId) {
-//		String DELETE_TRIP = "DELETE FROM trips WHERE trip_id = ?";
-//		try (Connection connection = connectionManager.getConnection();
-//				PreparedStatement ps = connection.prepareStatement(DELETE_TRIP)) {
-//			ps.setInt(1, tripId);
-//			ps.executeUpdate();
-//			Logger.info("Trip with ID " + tripId + " deleted successfully");
-//		} catch (SQLException e) {
-//			Logger.error("Error deleting trip", e);
-//		}
-//	}
 	void deleteTrip(int tripId) throws SQLException{
 		String DELETE_TRIP = "DELETE FROM trips WHERE trip_id = ?";
 		Connection connection = null;
@@ -398,7 +317,7 @@ public class DaoFile {
 			ps.executeUpdate();
 			Logger.info("Trip with ID " + tripId + " deleted successfully");
 		} catch (SQLException e) {
-			Logger.error("Error adding caver", e);
+			Logger.error("Error deleting trip", e);
 			throw e;
 		} finally {
 			try {
