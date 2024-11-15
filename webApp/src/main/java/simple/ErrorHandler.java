@@ -1,6 +1,8 @@
 package simple;
 
 import java.io.IOException;
+import org.tinylog.Logger;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,16 +16,19 @@ import javax.servlet.http.HttpSession;
 @WebServlet("/ErrorHandler")
 public class ErrorHandler extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-
+	
+	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		processError(request, response);
 	}
-
+	
+	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 		processError(request, response);
 	}
+	
 	private void processError(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
 		//customize error message
@@ -33,16 +38,15 @@ public class ErrorHandler extends HttpServlet {
 		if (servletName == null) {
 			servletName = "Unknown";
 		}
-		String requestUri = (String) request
-				.getAttribute("javax.servlet.error.request_uri");
+		String requestUri = (String) request.getAttribute("javax.servlet.error.request_uri");
 		if (requestUri == null) {
 			requestUri = "Unknown";
 		}     
 		
 		HttpSession session = request.getSession();
-		session.setAttribute("error", "Servlet " + servletName + 
-				" has thrown an exception " + throwable.getClass().getName() +
-				" : " + throwable.getMessage());   
+		session.setAttribute("error", "Servlet Error for " + servletName);   
 		request.getRequestDispatcher("/error_page.jsp").forward(request, response);
+		Logger.info("Servlet " + servletName + " has thrown an exception " + throwable.getClass().getName() +
+				" : " + throwable.getMessage());
 	}
 }

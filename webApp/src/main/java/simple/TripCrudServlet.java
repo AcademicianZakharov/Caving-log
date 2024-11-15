@@ -20,6 +20,12 @@ import org.tinylog.Logger;
 public class TripCrudServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private DaoFile dao;
+	
+	//regex for input validation
+	private static final String CAVE_NAME_REGEX = "^[A-Za-z\\s]{1,100}$";//matches a string of letters or spaces with 1 to 100 chars
+	private static final String TIME_STAMP_REGEX = "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$";//matches digits in this format: YYYY-MM-DD hh:mm:ss
+	private static final String GROUP_SIZE_REGEX = "^\\d+$";//matches non negative integers
+	private static final String MAX_TRIP_LENGTH_REGEX = "^\\d*[\\.]?[\\d]*$";//matches non negative decimal numbers
 	/**
 	 * Default constructor.
 	 */
@@ -44,18 +50,17 @@ public class TripCrudServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+			PrintWriter out = response.getWriter();
 			try {
 				dao.testConnection();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				out.println("Error testing database connection");
 			}
 			List<Trip> trips = null;
 			try {
 				trips = dao.getTrips();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				out.println("Error getting trips");
 			}
 			HttpSession session = request.getSession();
 			session.setAttribute("trips", trips);
@@ -76,41 +81,32 @@ public class TripCrudServlet extends HttpServlet {
 	 */
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//regex patterns
 		try {
-			String caveNameRegex = "^[A-Za-z\\s]{1,100}$";
-			String timestampRegex = "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}$";
-			String groupSizeRegex = "^\\d+$";
-			String maxTripLengthRegex = "^\\d*[\\.]?[\\d]*$";
-
 			String action = request.getParameter("action");
 			DaoFile dao = this.dao;
-				
+			PrintWriter out = response.getWriter();	
 			try {
 				dao.testConnection();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				out.println("Error testing database connection");
 			}
-			PrintWriter out = response.getWriter();
 			if ("delete".equals(action)) {
 				//delete trip
 				int tripId = Integer.parseInt(request.getParameter("trip_id"));
 				try {
 					dao.deleteTrip(tripId);
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					out.println("Error deleting trips");
 				}
 				Logger.info("Trip with ID " + tripId + " deleted.");
 				response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
 			} else if ("update".equals(action)) {
 				// Validate input
-				if (!isValid(request.getParameter("cave_name"), caveNameRegex) ||
-						!isValid(request.getParameter("start_time"), timestampRegex) ||
-						!isValid(request.getParameter("end_time"), timestampRegex) ||
-						!isValid(request.getParameter("group_size"), groupSizeRegex) ||
-						!isValid(request.getParameter("max_trip_length"), maxTripLengthRegex)) {
+				if (!isValid(request.getParameter("cave_name"), CAVE_NAME_REGEX) ||
+						!isValid(request.getParameter("start_time"), TIME_STAMP_REGEX) ||
+						!isValid(request.getParameter("end_time"), TIME_STAMP_REGEX) ||
+						!isValid(request.getParameter("group_size"), GROUP_SIZE_REGEX) ||
+						!isValid(request.getParameter("max_trip_length"), MAX_TRIP_LENGTH_REGEX)) {
 					out.println("Error: Invalid input format.");
 					Logger.info("invalid input");
 					return;
@@ -131,18 +127,17 @@ public class TripCrudServlet extends HttpServlet {
 				try {
 					dao.updateTrip(tripId, caveName, startTime, endTime, groupSize, maxTripLength);
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					out.println("Error updating trip");
 				}
 				Logger.info("Trip with ID " + tripId + " updated.");
 				response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
 			} else if ("insert".equals(action)) {
 				// Validate input
-				if (!isValid(request.getParameter("cave_name"), caveNameRegex) ||
-						!isValid(request.getParameter("start_time"), timestampRegex) ||
-						!isValid(request.getParameter("end_time"), timestampRegex) ||
-						!isValid(request.getParameter("group_size"), groupSizeRegex) ||
-						!isValid(request.getParameter("max_trip_length"), maxTripLengthRegex)) {
+				if (!isValid(request.getParameter("cave_name"), CAVE_NAME_REGEX) ||
+						!isValid(request.getParameter("start_time"), TIME_STAMP_REGEX) ||
+						!isValid(request.getParameter("end_time"), TIME_STAMP_REGEX) ||
+						!isValid(request.getParameter("group_size"), GROUP_SIZE_REGEX) ||
+						!isValid(request.getParameter("max_trip_length"), MAX_TRIP_LENGTH_REGEX)) {
 					out.println("Error: Invalid input format.");
 					Logger.info("invalid input");
 					return;
@@ -165,8 +160,7 @@ public class TripCrudServlet extends HttpServlet {
 				try {
 					dao.addTrip(caverId, caveName, startTime, endTime, groupSize, maxTripLength);
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					out.println("Error adding trips");
 				}
 				Logger.info("New trip added: Cave = " + caveName);
 				response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
@@ -176,8 +170,7 @@ public class TripCrudServlet extends HttpServlet {
 				try {
 					trips = dao.getTrips();
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					out.println("Error getting trips");
 				}
 				HttpSession session = request.getSession();
 				session.setAttribute("trips", trips);
@@ -204,4 +197,17 @@ public class TripCrudServlet extends HttpServlet {
 		Matcher matcher = pattern.matcher(input);
 		return matcher.matches();
 	}
+	
+//	private void retrieveCavers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+//		try {
+//			List<Trip> trips = dao.getTrips();
+//			HttpSession session = request.getSession();
+//			session.setAttribute("trips", trips);
+//			RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
+//			dispatcher.forward(request, response);
+//		} catch (SQLException e) {
+//			Logger.error("Error loading trips from database", e);
+//			throw new ServletException(e);
+//		}
+//	}
 }

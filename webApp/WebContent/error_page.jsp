@@ -10,7 +10,8 @@
 <%
 
 String error =  session.getAttribute("error").toString();
-out.println("Error: " + error);
+out.println(error);
+
 %>
 </body>
 </html>

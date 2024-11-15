@@ -1,22 +1,17 @@
 package simple;
-
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.ServerException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.servlet.RequestDispatcher;
-
 import org.tinylog.Logger;
-
 /**
  * Servlet CrudServlet
  * Does CRUD operations for cavers in the database
@@ -24,23 +19,24 @@ import org.tinylog.Logger;
 public class CrudServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private DaoFile dao;
-
+	
+	//regex for input validation
+	private static final String NAME_STATUS_REGEX = "^[A-Za-z\\s]{1,100}$";
+	private static final String PHONE_REGEX = "[0-9]{3}-[0-9]{3}-[0-9]{4}$";
 	/**
 	 * Default constructor.
 	 */
 	public CrudServlet() {
 		this(new DaoFile());
 	}
-
-	//for tests
+	// for tests
 	public CrudServlet(DaoFile dao) {
 		super();
 		this.dao = dao;
 	}
-
 	/**
 	 * handles HTTP GET method
-	 * Reads a list of cavers from the db and sends it to read_handler.jsp
+	 * calls retireveCavers to get a list of cavers from the db and send it to read_handler.jsp
 	 *
 	 * @param request  The HttpServletRequest object 
 	 * @param response The HttpServletResponse object
@@ -50,31 +46,11 @@ public class CrudServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			try {
-				dao.testConnection();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			List<Caver> cavers = null;
-			try {
-				cavers = dao.getCavers();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-			//store the list of cavers in the session
-			HttpSession session = request.getSession();
-			session.setAttribute("cavers", cavers);
-			//forward to the JSP page
-			RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
-			dispatcher.forward(request, response);}
-		catch (ServletException e) {
-			throw e;
+			retrieveCavers(request, response);
+		} catch (ServletException | IOException | SQLException e) {
+			throw new ServletException(e);
 		}
-
 	}
-
 	/**
 	 * handles the HTTP POST method for CRUD operations and validates input
 	 *
@@ -84,115 +60,73 @@ public class CrudServlet extends HttpServlet {
 	 * @throws IOException if an I/O error occurs
 	 */	
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
-		//regex
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			String nameRegex = "^[A-Za-z\\s]{1,100}$";//matches a string of letters or spaces with 1 to 100 chars
-			String statusRegex = "^[A-Za-z\\s]{1,100}$";//matches a string of letters or spaces with 1 to 100 chars
-			String phoneRegex = "[0-9]{3}-[0-9]{3}-[0-9]{4}$";//matches a phone number with NPA-NXX-XXXX format
-
 			String action = request.getParameter("action");
-			DaoFile dao = this.dao;
-			PrintWriter out = response.getWriter();
-			//test servlet exception
-			//		String nullString = null;
-			//		int i = nullString.length();
-			try {
-				dao.testConnection();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
+			dao.testConnection();
 			if ("delete".equals(action)) {
-				//delete caver
-				int caverId = Integer.parseInt(request.getParameter("caver_id"));
-				try {
-					dao.deleteCaver(caverId);
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				Logger.info("Caver with ID " + caverId + " deleted.");
-				response.sendRedirect(request.getContextPath() + "/CrudServlet");
-				action = null;
-
+				deleteCaver(request, response);
 			} else if ("update".equals(action)) {
-				//update caver
-				int caverId = Integer.parseInt(request.getParameter("caver_id"));
-				String name = request.getParameter("name");
-				String status = request.getParameter("status");
-				String phone = request.getParameter("phone");
-
-				if (!isValid(name, nameRegex) || !isValid(status, statusRegex) || !isValid(phone, phoneRegex)) {
-					out.println("Error: All fields (name, status, phone) are required and must be in the correct format.");
-					return;
-				}
-				Logger.info("Updating Caver: Name = " + name + ", Status = " + status + ", Phone = " + phone);
-				try {
-					dao.updateCaver(caverId,name, status, phone);
-				}
-				catch (Exception e) {
-					// TODO: handle exceptiont
-					e.printStackTrace();
-				}
-				Logger.info("Caver with ID " + caverId + " updated.");
-				response.sendRedirect(request.getContextPath() + "/CrudServlet");
-				action = null;
+				updateCaver(request, response);
 			} else if ("insert".equals(action)) {
-				//add caver
-				String name = request.getParameter("name");
-				String status = request.getParameter("status");
-				String phone = request.getParameter("phone");
-				//Check valid input
-				if (!isValid(name, nameRegex) || !isValid(status, statusRegex) || !isValid(phone, phoneRegex)) {
-					out.println("Error: All fields (name, status, phone) are required and must be in the correct format.");
-					return;
-				}
-				try {
-					dao.addCaver(name, status, phone);
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-				Logger.info("New caver added: " + name);
-				//show the caver in a jsp page
-				List<Caver> cavers = null;
-				try {
-					cavers = dao.getCavers();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-				//store the list of cavers in the session
-				HttpSession session = request.getSession();
-				session.setAttribute("cavers", cavers);
-				//forward to the JSP page
-				RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
-				dispatcher.forward(request, response);
-				action = null;
+				insertCaver(request, response);
+			} else {
+				retrieveCavers(request, response);
 			}
-			else {		
-				//Read cavers from db
-				List<Caver> cavers = null;
-				try {
-					cavers = dao.getCavers();
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} 
-				//store the list of cavers in the session
-				HttpSession session = request.getSession();
-				session.setAttribute("cavers", cavers);
-				//forward to the JSP page
-				RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
-				dispatcher.forward(request, response);
-				action = null;
-			}
+		} catch (SQLException e) {
+			Logger.error("Database connection error", e);
+			throw new ServletException(e);
 		}
-		catch (ServletException e) {
-			throw e;
+	}
+	/**
+	 * Validates an input string using regex
+	 *
+	 * @param String input to validate
+	 * @param String regex to match
+	 * @return true if input matches the regex, else false
+	 */
+	private void deleteCaver(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException, SQLException {
+		int caverId = Integer.parseInt(request.getParameter("caver_id"));
+		dao.deleteCaver(caverId);
+		Logger.info("Caver with ID " + caverId + " deleted.");
+		response.sendRedirect(request.getContextPath() + "/CrudServlet");
+	}
+	private void updateCaver(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
+		String name = request.getParameter("name");
+		String status = request.getParameter("status");
+		String phone = request.getParameter("phone");
+		if (!isValid(name, NAME_STATUS_REGEX) || !isValid(status, NAME_STATUS_REGEX) || !isValid(phone, PHONE_REGEX)) {
+			response.getWriter().println("Error: All fields (name, status, phone) are required and must be in the correct format.");
+			return;
 		}
-
+		int caverId = Integer.parseInt(request.getParameter("caver_id"));
+		dao.updateCaver(caverId, name, status, phone);
+		Logger.info("Caver with ID " + caverId + " updated.");
+		response.sendRedirect(request.getContextPath() + "/CrudServlet");
+	}
+	private void insertCaver(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
+		String name = request.getParameter("name");
+		String status = request.getParameter("status");
+		String phone = request.getParameter("phone");
+		if (!isValid(name, NAME_STATUS_REGEX) || !isValid(status, NAME_STATUS_REGEX) || !isValid(phone, PHONE_REGEX)) {
+			response.getWriter().println("Error: All fields (name, status, phone) are required and must be in the correct format.");
+			return;
+		}
+		dao.addCaver(name, status, phone);
+		Logger.info("New caver added: " + name);
+		retrieveCavers(request, response);
+	}
+	private void retrieveCavers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
+		try {
+			List<Caver> cavers = dao.getCavers();
+			HttpSession session = request.getSession();
+			session.setAttribute("cavers", cavers);
+			RequestDispatcher dispatcher = request.getRequestDispatcher("read_handler.jsp");
+			dispatcher.forward(request, response);
+		} catch (SQLException e) {
+			Logger.error("Error loading cavers from database", e);
+			throw new ServletException(e);
+		}
 	}
 	/**
 	 * Validates an input string using regex
@@ -206,4 +140,4 @@ public class CrudServlet extends HttpServlet {
 		Matcher matcher = pattern.matcher(input);
 		return matcher.matches();
 	}
-}
+}	
