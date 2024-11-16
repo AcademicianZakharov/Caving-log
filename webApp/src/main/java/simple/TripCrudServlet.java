@@ -33,7 +33,9 @@ public class TripCrudServlet extends HttpServlet {
 		this(new DaoFile());
 	}
 
-	//for tests
+	/**
+	 * for running TripCrudServletTest
+	 */
 	public TripCrudServlet(DaoFile dao) {
 		super();
 		this.dao = dao;
@@ -50,25 +52,9 @@ public class TripCrudServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
-			PrintWriter out = response.getWriter();
-			try {
-				dao.testConnection();
-			} catch (SQLException e) {
-				out.println("Error testing database connection");
-			}
-			List<Trip> trips = null;
-			try {
-				trips = dao.getTrips();
-			} catch (SQLException e) {
-				out.println("Error getting trips");
-			}
-			HttpSession session = request.getSession();
-			session.setAttribute("trips", trips);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
-			dispatcher.forward(request, response);
-		}
-		catch (ServletException e){
-			throw e;
+			retrieveTrips(request, response, false);
+		} catch (SQLException e) {
+			throw new ServletException(e);
 		}
 	}
 	/**
@@ -91,97 +77,17 @@ public class TripCrudServlet extends HttpServlet {
 				out.println("Error testing database connection");
 			}
 			if ("delete".equals(action)) {
-				//delete trip
-				int tripId = Integer.parseInt(request.getParameter("trip_id"));
-				try {
-					dao.deleteTrip(tripId);
-				} catch (SQLException e) {
-					out.println("Error deleting trips");
-				}
-				Logger.info("Trip with ID " + tripId + " deleted.");
-				response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
+				deleteTrip(request, response);
 			} else if ("update".equals(action)) {
-				// Validate input
-				if (!isValid(request.getParameter("cave_name"), CAVE_NAME_REGEX) ||
-						!isValid(request.getParameter("start_time"), TIME_STAMP_REGEX) ||
-						!isValid(request.getParameter("end_time"), TIME_STAMP_REGEX) ||
-						!isValid(request.getParameter("group_size"), GROUP_SIZE_REGEX) ||
-						!isValid(request.getParameter("max_trip_length"), MAX_TRIP_LENGTH_REGEX)) {
-					out.println("Error: Invalid input format.");
-					Logger.info("invalid input");
-					return;
-				}
-				//update trip
-				int tripId = Integer.parseInt(request.getParameter("trip_id"));
-				String caveName = request.getParameter("cave_name");
-				Timestamp startTime = Timestamp.valueOf(request.getParameter("start_time"));
-				Timestamp endTime = Timestamp.valueOf(request.getParameter("end_time"));
-				int groupSize = Integer.parseInt(request.getParameter("group_size"));
-				double maxTripLength = Double.parseDouble(request.getParameter("max_trip_length"));
-				if(startTime.after(endTime)) {
-					out.println("Error: Invalid time.");
-					Logger.info("invalid input");
-					return;
-				}
-
-				try {
-					dao.updateTrip(tripId, caveName, startTime, endTime, groupSize, maxTripLength);
-				} catch (SQLException e) {
-					out.println("Error updating trip");
-				}
-				Logger.info("Trip with ID " + tripId + " updated.");
-				response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
+				updateTrip(request, response);
 			} else if ("insert".equals(action)) {
-				// Validate input
-				if (!isValid(request.getParameter("cave_name"), CAVE_NAME_REGEX) ||
-						!isValid(request.getParameter("start_time"), TIME_STAMP_REGEX) ||
-						!isValid(request.getParameter("end_time"), TIME_STAMP_REGEX) ||
-						!isValid(request.getParameter("group_size"), GROUP_SIZE_REGEX) ||
-						!isValid(request.getParameter("max_trip_length"), MAX_TRIP_LENGTH_REGEX)) {
-					out.println("Error: Invalid input format.");
-					Logger.info("invalid input");
-					return;
-				}
-				//add trip
-				int caverId = Integer.parseInt(request.getParameter("caver_id"));
-				String caveName = request.getParameter("cave_name");
-				Timestamp startTime = Timestamp.valueOf(request.getParameter("start_time"));
-				Timestamp endTime = Timestamp.valueOf(request.getParameter("end_time"));
-				int groupSize = Integer.parseInt(request.getParameter("group_size"));
-				double maxTripLength = Double.parseDouble(request.getParameter("max_trip_length"));
-
-				if(startTime.after(endTime)) {
-					out.println("Error: Invalid time.");
-					Logger.info("invalid input");
-					return;
-				}
-
-
-				try {
-					dao.addTrip(caverId, caveName, startTime, endTime, groupSize, maxTripLength);
-				} catch (SQLException e) {
-					out.println("Error adding trips");
-				}
-				Logger.info("New trip added: Cave = " + caveName);
-				response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
+				insertTrip(request, response);
 			} else {
-				//Read from db
-				List<Trip> trips = null;
-				try {
-					trips = dao.getTrips();
-				} catch (SQLException e) {
-					out.println("Error getting trips");
-				}
-				HttpSession session = request.getSession();
-				session.setAttribute("trips", trips);
-				int caverId = Integer.parseInt(request.getParameter("caver_id"));
-				session.setAttribute("caver_id", caverId);
-				RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
-				dispatcher.forward(request, response);
+				retrieveTrips(request, response, true);
 			}
 		}
-		catch (ServletException e) {
-			throw e;
+		catch (SQLException e) {
+			throw new ServletException(e);
 		}
 	}
 
@@ -197,17 +103,136 @@ public class TripCrudServlet extends HttpServlet {
 		Matcher matcher = pattern.matcher(input);
 		return matcher.matches();
 	}
+	/**
+	 * deletes trip from db
+	 *
+	 * @param request  The HttpServletRequest object
+	 * @param response The HttpServletResponse object
+	 * @throws ServletException if a servlet error occurs
+	 * @throws IOException if an I/O error occurs
+	 * @throws SQLException if SQL error occurs
+	 */	
+	private void deleteTrip(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException, SQLException {
+		int tripId = Integer.parseInt(request.getParameter("trip_id"));
+		try {
+			dao.deleteTrip(tripId);
+		} catch (SQLException e) {
+			response.getWriter().println("Error deleting trips");
+		}
+		Logger.info("Trip with ID " + tripId + " deleted.");
+		response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
+	}
 	
-//	private void retrieveCavers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
-//		try {
-//			List<Trip> trips = dao.getTrips();
-//			HttpSession session = request.getSession();
-//			session.setAttribute("trips", trips);
-//			RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
-//			dispatcher.forward(request, response);
-//		} catch (SQLException e) {
-//			Logger.error("Error loading trips from database", e);
-//			throw new ServletException(e);
-//		}
-//	}
+	/**
+	 * validates attributes and updates trip in the db
+	 *
+	 * @param request  The HttpServletRequest object
+	 * @param response The HttpServletResponse object
+	 * @throws ServletException if a servlet error occurs
+	 * @throws IOException if an I/O error occurs
+	 * @throws SQLException if SQL error occurs
+	 */	
+	private void updateTrip(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
+		// Validate input
+		if (!isValid(request.getParameter("cave_name"), CAVE_NAME_REGEX) ||
+				!isValid(request.getParameter("start_time"), TIME_STAMP_REGEX) ||
+				!isValid(request.getParameter("end_time"), TIME_STAMP_REGEX) ||
+				!isValid(request.getParameter("group_size"), GROUP_SIZE_REGEX) ||
+				!isValid(request.getParameter("max_trip_length"), MAX_TRIP_LENGTH_REGEX)) {
+			response.getWriter().println("Error: Invalid input format.");
+			Logger.info("invalid input");
+			return;
+		}
+		//update trip
+		int tripId = Integer.parseInt(request.getParameter("trip_id"));
+		String caveName = request.getParameter("cave_name");
+		Timestamp startTime = Timestamp.valueOf(request.getParameter("start_time"));
+		Timestamp endTime = Timestamp.valueOf(request.getParameter("end_time"));
+		int groupSize = Integer.parseInt(request.getParameter("group_size"));
+		double maxTripLength = Double.parseDouble(request.getParameter("max_trip_length"));
+		if(startTime.after(endTime)) {
+			response.getWriter().println("Error: Invalid time.");
+			Logger.info("invalid input");
+			return;
+		}
+
+		try {
+			dao.updateTrip(tripId, caveName, startTime, endTime, groupSize, maxTripLength);
+		} catch (SQLException e) {
+			response.getWriter().println("Error updating trip");
+		}
+		Logger.info("Trip with ID " + tripId + " updated.");
+		response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
+	}
+	
+	/**
+	 * validates attributes and inserts trip to the db
+	 *
+	 * @param request  The HttpServletRequest object
+	 * @param response The HttpServletResponse object
+	 * @throws ServletException if a servlet error occurs
+	 * @throws IOException if an I/O error occurs
+	 * @throws SQLException if SQL error occurs
+	 */	
+	private void insertTrip(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
+		// Validate input
+		if (!isValid(request.getParameter("cave_name"), CAVE_NAME_REGEX) ||
+				!isValid(request.getParameter("start_time"), TIME_STAMP_REGEX) ||
+				!isValid(request.getParameter("end_time"), TIME_STAMP_REGEX) ||
+				!isValid(request.getParameter("group_size"), GROUP_SIZE_REGEX) ||
+				!isValid(request.getParameter("max_trip_length"), MAX_TRIP_LENGTH_REGEX)) {
+			response.getWriter().println("Error: Invalid input format.");
+			Logger.info("invalid input");
+			return;
+		}
+		//add trip
+		int caverId = Integer.parseInt(request.getParameter("caver_id"));
+		String caveName = request.getParameter("cave_name");
+		Timestamp startTime = Timestamp.valueOf(request.getParameter("start_time"));
+		Timestamp endTime = Timestamp.valueOf(request.getParameter("end_time"));
+		int groupSize = Integer.parseInt(request.getParameter("group_size"));
+		double maxTripLength = Double.parseDouble(request.getParameter("max_trip_length"));
+
+		if(startTime.after(endTime)) {
+			response.getWriter().println("Error: Invalid time.");
+			Logger.info("invalid input");
+			return;
+		}
+
+
+		try {
+			dao.addTrip(caverId, caveName, startTime, endTime, groupSize, maxTripLength);
+		} catch (SQLException e) {
+			response.getWriter().println("Error adding trips");
+		}
+		Logger.info("New trip added: Cave = " + caveName);
+		response.sendRedirect(request.getContextPath() + "/TripCrudServlet");
+	}
+	/**
+	 * gets trips from the db and forwards them to view_trips.jsp to display them
+	 *
+	 * @param request  The HttpServletRequest object
+	 * @param response The HttpServletResponse object
+	 * @param requireCaverId boolean
+	 * @throws ServletException if a servlet error occurs
+	 * @throws IOException if an I/O error occurs
+	 * @throws SQLException if SQL error occurs
+	 */	
+	private void retrieveTrips(HttpServletRequest request, HttpServletResponse response, Boolean requireCaverId) throws ServletException, IOException, SQLException {
+		List<Trip> trips = null;
+		try {
+			trips = dao.getTrips();
+		} catch (SQLException e) {
+			response.getWriter().println("Error getting trips");
+		}
+		HttpSession session = request.getSession();
+		session.setAttribute("trips", trips);
+		if(requireCaverId) {
+			int caverId = Integer.parseInt(request.getParameter("caver_id"));
+			session.setAttribute("caver_id", caverId);
+
+		}
+		RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
+		dispatcher.forward(request, response);
+	}
 }

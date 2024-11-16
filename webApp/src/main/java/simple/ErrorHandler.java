@@ -44,9 +44,9 @@ public class ErrorHandler extends HttpServlet {
 		}     
 		
 		HttpSession session = request.getSession();
-		session.setAttribute("error", "Servlet Error for " + servletName);   
+		session.setAttribute("error",  statusCode + "&nbsp;Server Error <br> Oops, something went wrong.");   
 		request.getRequestDispatcher("/error_page.jsp").forward(request, response);
 		Logger.info("Servlet " + servletName + " has thrown an exception " + throwable.getClass().getName() +
-				" : " + throwable.getMessage());
+				" : " + throwable.getMessage() + " ,status code: " + statusCode);
 	}
 }

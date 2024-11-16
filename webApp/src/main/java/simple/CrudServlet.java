@@ -1,6 +1,5 @@
 package simple;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -29,7 +28,9 @@ public class CrudServlet extends HttpServlet {
 	public CrudServlet() {
 		this(new DaoFile());
 	}
-	// for tests
+	/**
+	 * for running CrudServletTest
+	 */
 	public CrudServlet(DaoFile dao) {
 		super();
 		this.dao = dao;
@@ -46,8 +47,9 @@ public class CrudServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		try {
+			dao.testConnection();
 			retrieveCavers(request, response);
-		} catch (ServletException | IOException | SQLException e) {
+		} catch (SQLException e) {
 			throw new ServletException(e);
 		}
 	}
@@ -74,23 +76,33 @@ public class CrudServlet extends HttpServlet {
 				retrieveCavers(request, response);
 			}
 		} catch (SQLException e) {
-			Logger.error("Database connection error", e);
 			throw new ServletException(e);
 		}
 	}
 	/**
-	 * Validates an input string using regex
+	 * deletes caver from db
 	 *
-	 * @param String input to validate
-	 * @param String regex to match
-	 * @return true if input matches the regex, else false
-	 */
+	 * @param request  The HttpServletRequest object
+	 * @param response The HttpServletResponse object
+	 * @throws ServletException if a servlet error occurs
+	 * @throws IOException if an I/O error occurs
+	 * @throws SQLException if SQL error occurs
+	 */	
 	private void deleteCaver(HttpServletRequest request, HttpServletResponse response) throws IOException, SQLException, SQLException {
 		int caverId = Integer.parseInt(request.getParameter("caver_id"));
 		dao.deleteCaver(caverId);
 		Logger.info("Caver with ID " + caverId + " deleted.");
 		response.sendRedirect(request.getContextPath() + "/CrudServlet");
 	}
+	/**
+	 * validates attributes and updates caver in the db
+	 *
+	 * @param request  The HttpServletRequest object
+	 * @param response The HttpServletResponse object
+	 * @throws ServletException if a servlet error occurs
+	 * @throws IOException if an I/O error occurs
+	 * @throws SQLException if SQL error occurs
+	 */	
 	private void updateCaver(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
 		String name = request.getParameter("name");
 		String status = request.getParameter("status");
@@ -104,6 +116,15 @@ public class CrudServlet extends HttpServlet {
 		Logger.info("Caver with ID " + caverId + " updated.");
 		response.sendRedirect(request.getContextPath() + "/CrudServlet");
 	}
+	/**
+	 * validates attributes and inserts caver to the db
+	 *
+	 * @param request  The HttpServletRequest object
+	 * @param response The HttpServletResponse object
+	 * @throws ServletException if a servlet error occurs
+	 * @throws IOException if an I/O error occurs
+	 * @throws SQLException if SQL error occurs
+	 */	
 	private void insertCaver(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException, SQLException {
 		String name = request.getParameter("name");
 		String status = request.getParameter("status");
@@ -116,6 +137,15 @@ public class CrudServlet extends HttpServlet {
 		Logger.info("New caver added: " + name);
 		retrieveCavers(request, response);
 	}
+	/**
+	 * gets cavers from the db, forwards to read_handler.jsp to display it
+	 *
+	 * @param request  The HttpServletRequest object
+	 * @param response The HttpServletResponse object
+	 * @throws ServletException if a servlet error occurs
+	 * @throws IOException if an I/O error occurs
+	 * @throws SQLException if SQL error occurs
+	 */	
 	private void retrieveCavers(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, SQLException {
 		try {
 			List<Caver> cavers = dao.getCavers();
