@@ -230,7 +230,6 @@ public class TripCrudServlet extends HttpServlet {
 		if(requireCaverId) {
 			int caverId = Integer.parseInt(request.getParameter("caver_id"));
 			session.setAttribute("caver_id", caverId);
-
 		}
 		RequestDispatcher dispatcher = request.getRequestDispatcher("view_trips.jsp");
 		dispatcher.forward(request, response);
